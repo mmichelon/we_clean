@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "51474593854",
+    "firebase_url": "https://we-clean-4ef33.firebaseio.com",
+    "project_id": "we-clean-4ef33",
+    "storage_bucket": "we-clean-4ef33.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51474593854:android:3867a9b45db15aff3af96f",
+        "android_client_info": {
+          "package_name": "com.maxmichelon.we_clean"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "51474593854-nfgvmpj5598cuf2fr0flebggna3m5c58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUfriuiIZdUPv4xlNTXTs6gjShVdoH0Ss"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "51474593854-nfgvmpj5598cuf2fr0flebggna3m5c58.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
