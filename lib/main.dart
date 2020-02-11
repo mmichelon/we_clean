@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -91,10 +93,18 @@ class HomePage extends StatelessWidget {
     }
   }
 
+  //Google maps information
+  GoogleMapController mapController;
+  final LatLng _center = const LatLng(45.521563, -122.677433);
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
         title: Text('Home Page'),
         actions: <Widget>[
           FlatButton(
@@ -109,25 +119,56 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-
-      body: Center(
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              const Text.rich(
-                TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(text: 'Hello ', style: TextStyle(fontSize: 30, color: Colors.orangeAccent)),
-                    TextSpan(text: 'Anonymous', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blue)),
-                    TextSpan(text: ' user!', style: TextStyle(fontSize: 30, color: Colors.orangeAccent)),
-                  ],
-                ),
-              )
-            ],
-          )
+//        appBar: AppBar(
+//          title: Text('Maps Sample App'),
+//          backgroundColor: Colors.green[700],
+//        ),
+        body: GoogleMap(
+          onMapCreated: _onMapCreated,
+          initialCameraPosition: CameraPosition(
+            target: _center,
+            zoom: 11.0,
+          ),
+        ),
       ),
     );
   }
+//  Widget build(BuildContext context) {
+//    return Scaffold(
+//      appBar: AppBar(
+//        title: Text('Home Page'),
+//        actions: <Widget>[
+//          FlatButton(
+//            child: Text(
+//              'Logout',
+//              style: TextStyle(
+//                fontSize: 18.0,
+//                color: Colors.white,
+//              ),
+//            ),
+//            onPressed: _signOut,
+//          ),
+//        ],
+//      ),
+//      body: Center(
+//          child: new Column(
+//            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//            children: <Widget>[
+//              const Text.rich(
+//                TextSpan(
+//                  children: <TextSpan>[
+//                    TextSpan(text: 'Hello ', style: TextStyle(fontSize: 30, color: Colors.orangeAccent)),
+//                    TextSpan(text: 'Anonymous', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blue)),
+//                    TextSpan(text: ' user!', style: TextStyle(fontSize: 30, color: Colors.orangeAccent)),
+//                  ],
+//                ),
+//              )
+//            ],
+//          )
+//      ),
+//    );
+//  }
+
 }
 
 
