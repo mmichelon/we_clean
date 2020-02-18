@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              FlutterLogo(size: 150),
+              Image.asset('assets/we_clean.png',),
               SizedBox(height: 50),
               _signInGoogleButton(),
               SizedBox(height: 20),
@@ -36,13 +36,18 @@ class _LoginPageState extends State<LoginPage> {
       splashColor: Colors.grey,
       onPressed: () {
         signInWithGoogle().whenComplete(() {
-          Navigator.of(context).push(
+          Navigator.push(
+            context,
             MaterialPageRoute(
-              builder: (context) {
-                return HomeScreen();
-              },
-            ),
+                builder: (context) => HomeScreen(name, email)),
           );
+//          Navigator.of(context).push(
+//            MaterialPageRoute(
+//              builder: (context) {
+//                return HomeScreen();
+//              },
+//            ),
+//          );
         });
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
