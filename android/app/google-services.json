@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "51474593854-45t73qukvbecr930lhg8kpos0r7b6csf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maxmichelon.we_clean",
+            "certificate_hash": "2079ff1fbd837acc2c19977a10af734a089131fd"
+          }
+        },
+        {
           "client_id": "51474593854-nfgvmpj5598cuf2fr0flebggna3m5c58.apps.googleusercontent.com",
           "client_type": 3
         }
