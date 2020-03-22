@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:we_clean/new_cleans_screen.dart';
 import 'package:we_clean/sign_in.dart';
 import 'package:we_clean/cleans_screen.dart';
 import 'package:we_clean/home.dart';
+import 'package:we_clean/map_screen.dart';
 import 'package:we_clean/login_page.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -14,11 +16,14 @@ class MyDrawer extends StatefulWidget {
 class _MyDrawerState extends State<MyDrawer> {
 
   final databaseReference = Firestore.instance;
+
   QuerySnapshot querySnapshot;
+  static const LatLng _center = const LatLng(45.521563, -122.677433);
+
 
   void initState() {
     super.initState();
-      getDriversList().then((results) {
+    getDriversList().then((results) {
       setState(() {
         querySnapshot = results;
       });
@@ -57,7 +62,7 @@ class _MyDrawerState extends State<MyDrawer> {
                       DocumentSnapshot doc = snapshot.data;
                       return Text("Score: " + doc.data['Score'].toString(),
                       style: TextStyle(
-                        color: Colors.red,
+                        color: Colors.yellow,
                         fontSize: 18,
                       ),
                     );
@@ -80,9 +85,9 @@ class _MyDrawerState extends State<MyDrawer> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.add),
+            leading: Icon(Icons.apps),
             title: Text('Cleanups'),
-            trailing: Icon(Icons.apps),
+            trailing: Icon(Icons.keyboard_arrow_right),
             onTap: (){
               print('Go to cleanups page');
               Navigator.push(
@@ -101,7 +106,7 @@ class _MyDrawerState extends State<MyDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => HomeScreen(name, email)),
+                    builder: (context) => MapScreen(name, email, 45.521563, -122.677433 )),
               );
             },
           ),

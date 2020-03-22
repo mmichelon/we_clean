@@ -32,6 +32,7 @@ dependencies:
   location: ^2.4.0
   cloud_firestore: ^0.13.3
 #  firebase_database: ^3.1.1
+  geoflutterfire: ^2.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:we_clean/sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home.dart';
+import 'package:we_clean/sign_in.dart';
+import 'package:we_clean/map_screen.dart';
+import 'package:we_clean/cleans_screen.dart';
+
+
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -39,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HomeScreen(name, email)),
+                builder: (context) => CleansScreen(name, email)),
           );
 //          Navigator.of(context).push(
 //            MaterialPageRoute(

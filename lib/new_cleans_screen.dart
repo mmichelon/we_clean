@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:we_clean/drawer.dart';
 
 import 'package:geolocator/geolocator.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 
+import 'package:we_clean/next_new_cleans_screen.dart';
 
 class NewCleanScreen extends StatefulWidget {
   final name;
@@ -23,10 +25,16 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
 
   final databaseReference = Firestore.instance;
 
+  Geoflutterfire geo;
+  TextEditingController _latitudeController, _longitudeController;
+  Stream<List<DocumentSnapshot>> stream;
+
   final _formKey = GlobalKey<FormState>();
 
   final Map<String, dynamic> _formData = {'title': null, 'description': null};
   final focusPassword = FocusNode();
+
+  var startTime;
 
   Geolocator geolocator = Geolocator();
   Position userLocation;
@@ -101,6 +109,7 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
       focusNode: focusPassword,
       onFieldSubmitted: (v) {
         _submitForm();
+
       },
     );
   }
@@ -117,13 +126,21 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
   void _submitForm() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
+      print("_formData");
+
       print(_formData);
       createRecord(_formData);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NextNewCleanScreen(name, email, _formData, startTime)),
+      );
     }
   }
 
   void createRecord(_results) async {
     var _list = _results.values.toList();
+
     print(_list[0]);
     print(_list[1]);
     print(userLocation.latitude);
@@ -131,6 +148,7 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
 
     //Calculate time
     var now = new DateTime.now();
+    startTime = now;
     var sixtyDaysFromNow = now.add(new Duration(days: 60));
     var difference = sixtyDaysFromNow.difference(now);
     print("difference: ");
@@ -139,11 +157,13 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
     await databaseReference.collection(email) //use email to store collection
         .document(_list[0]) //clean name
         .setData({
+      'title': _list[0],
       'description': _list[1], //set inner values
       'StartLat': userLocation.latitude,
       'StartLon': userLocation.longitude,
       'StartTime': now
     });
+    updateScore();
   }
 
   void deleteData() {
@@ -156,7 +176,6 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
       print(e.toString());
     }
   }
-
   void getData(value) {
     databaseReference
 //        .collection("books")
@@ -167,7 +186,6 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
       snapshot.documents.forEach((f) => print('${f.data}}'));
     });
   }
-
   void updateData() {
     try {
       databaseReference
@@ -177,6 +195,14 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
     } catch (e) {
       print(e.toString());
     }
+  }
+  void updateScore() async {
+    Firestore.instance.
+    collection(email).
+    document('Score').
+        updateData(<String, dynamic> {
+          'Score': FieldValue.increment(10),
+        });
   }
 
   Future<Position> _getLocation() async {
