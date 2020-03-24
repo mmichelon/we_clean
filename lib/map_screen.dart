@@ -318,91 +318,91 @@ class MyMapState extends State<MapScreen> {
             ),
           ),
         ),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('add'),
-                          onPressed: _add,
-                        ),
-                        FlatButton(
-                          child: const Text('remove'),
-                          onPressed: _remove,
-                        ),
-                        FlatButton(
-                          child: const Text('change info'),
-                          onPressed: _changeInfo,
-                        ),
-                        FlatButton(
-                          child: const Text('change info anchor'),
-                          onPressed: _changeInfoAnchor,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('change alpha'),
-                          onPressed: _changeAlpha,
-                        ),
-                        FlatButton(
-                          child: const Text('change anchor'),
-                          onPressed: _changeAnchor,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle draggable'),
-                          onPressed: _toggleDraggable,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle flat'),
-                          onPressed: _toggleFlat,
-                        ),
-                        FlatButton(
-                          child: const Text('change position'),
-                          onPressed: _changePosition,
-                        ),
-                        FlatButton(
-                          child: const Text('change rotation'),
-                          onPressed: _changeRotation,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle visible'),
-                          onPressed: _toggleVisible,
-                        ),
-                        FlatButton(
-                          child: const Text('change zIndex'),
-                          onPressed: _changeZIndex,
-                        ),
-                        // A breaking change to the ImageStreamListener API affects this sample.
-                        // I've updates the sample to use the new API, but as we cannot use the new
-                        // API before it makes it to stable I'm commenting out this sample for now
-                        // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-                        // https://github.com/flutter/flutter/issues/33438
-                        //
-                        // FlatButton(
-                        //   child: const Text('set marker icon'),
-                        //   onPressed: () {
-                        //     _getAssetIcon(context).then(
-                        //       (BitmapDescriptor icon) {
-                        //         _setMarkerIcon(icon);
-                        //       },
-                        //     );
-                        //   },
-                        // ),
-                      ],
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ),
+//        Expanded(
+//          child: SingleChildScrollView(
+//            child: Row(
+//              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//              children: <Widget>[
+//                Row(
+//                  children: <Widget>[
+//                    Column(
+//                      children: <Widget>[
+//                        FlatButton(
+//                          child: const Text('add'),
+//                          onPressed: _add,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('remove'),
+//                          onPressed: _remove,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('change info'),
+//                          onPressed: _changeInfo,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('change info anchor'),
+//                          onPressed: _changeInfoAnchor,
+//                        ),
+//                      ],
+//                    ),
+//                    Column(
+//                      children: <Widget>[
+//                        FlatButton(
+//                          child: const Text('change alpha'),
+//                          onPressed: _changeAlpha,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('change anchor'),
+//                          onPressed: _changeAnchor,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('toggle draggable'),
+//                          onPressed: _toggleDraggable,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('toggle flat'),
+//                          onPressed: _toggleFlat,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('change position'),
+//                          onPressed: _changePosition,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('change rotation'),
+//                          onPressed: _changeRotation,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('toggle visible'),
+//                          onPressed: _toggleVisible,
+//                        ),
+//                        FlatButton(
+//                          child: const Text('change zIndex'),
+//                          onPressed: _changeZIndex,
+//                        ),
+//                        // A breaking change to the ImageStreamListener API affects this sample.
+//                        // I've updates the sample to use the new API, but as we cannot use the new
+//                        // API before it makes it to stable I'm commenting out this sample for now
+//                        // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
+//                        // https://github.com/flutter/flutter/issues/33438
+//                        //
+//                        // FlatButton(
+//                        //   child: const Text('set marker icon'),
+//                        //   onPressed: () {
+//                        //     _getAssetIcon(context).then(
+//                        //       (BitmapDescriptor icon) {
+//                        //         _setMarkerIcon(icon);
+//                        //       },
+//                        //     );
+//                        //   },
+//                        // ),
+//                      ],
+//                    ),
+//                  ],
+//                )
+//              ],
+//            ),
+//          ),
+//        ),
       ],
     );
   }

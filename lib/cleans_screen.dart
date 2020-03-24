@@ -56,6 +56,10 @@ class MyCleanScreenState extends State<CleansScreen> {
                               StartLon: document['StartLon'],
                               StartTime: document['StartTime'],
                               EndTime: document['EndTime'],
+                              downurl1: document['downurl1'],
+                              downurl2: document['downurl2'],
+                              downurl3: document['downurl3'],
+                              downurl4: document['downurl4'],
                             );
 
                         }).toList(),
@@ -70,7 +74,8 @@ class MyCleanScreenState extends State<CleansScreen> {
 }
 
 class CustomCard extends StatelessWidget {
-  CustomCard({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.StartTime, this.EndTime});
+  CustomCard({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.StartTime, this.EndTime,
+    this.downurl1, this.downurl2, this.downurl3, this.downurl4});
   final name;
   final email;
 
@@ -82,6 +87,11 @@ class CustomCard extends StatelessWidget {
 
   final StartTime;
   final EndTime;
+
+  final downurl1;
+  final downurl2;
+  final downurl3;
+  final downurl4;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +115,13 @@ class CustomCard extends StatelessWidget {
                                   StartLat: StartLat,
                                   StartLon: StartLon,
                                   StartTime: StartTime,
-                                  EndTime: EndTime
+                                  EndTime: EndTime,
+                                  downurl1: downurl1,
+                                  downurl2: downurl2,
+                                  downurl3: downurl3,
+                                  downurl4: downurl4,
+
+
                               )));
                     }),
               ],
@@ -114,7 +130,8 @@ class CustomCard extends StatelessWidget {
 }
 
 class SecondPage extends StatelessWidget {
-  SecondPage({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.StartTime, this.EndTime});
+  SecondPage({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.StartTime, this.EndTime,
+        this.downurl1, this.downurl2, this.downurl3, this.downurl4});
   final name;
   final email;
 
@@ -127,54 +144,147 @@ class SecondPage extends StatelessWidget {
   final StartTime;
   final EndTime;
 
+  final downurl1;
+  final downurl2;
+  final downurl3;
+  final downurl4;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(title),
         ),
-        body: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+      body: CustomScrollView(
+        primary: false,
+        slivers: <Widget>[
+          SliverPadding(
+            padding: const EdgeInsets.all(20),
+            sliver: SliverGrid.count(
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              crossAxisCount: 2,
               children: <Widget>[
-                Text("Description: "),
-                Text(description.toString() + "\n"),
-//                Text(StartLat.toString()),
-//                Text(StartLon.toString()),
+//                Container(
+//                  padding: const EdgeInsets.all(8),
+//                  child: downurl1 == null
+//                      ? Text("No image")
+//                      : Image.network(downurl1, fit:BoxFit.fill),
+////                    color: Colors.green[100],
+//                ),
+              Container(
+                child: Column(children: <Widget>[
+                  Text("Description: "),
+                  Text(description.toString() + "\n"),
+  //                Text(StartLat.toString()),
+  //                Text(StartLon.toString()),
+  //                Text(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000).toString()),
+  //                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000).toString()),
+                ],
+              ),
+
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: Column(children: <Widget>[
+
                 Text("Time Spent:"),
                 Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
                     .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
                     .inHours
                     .toString() +
-                    " hours and " +
-                    DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
+                    " hours"
+                    ),
+                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
                     .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
                     .inSeconds
                     .toString() +
                     " Seconds"),
-//                Text(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000).toString()),
-//                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000).toString()),
-                RaisedButton(
-                    child: Text('Back To Cleans Screen'),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Colors.white,
-                    onPressed: () => Navigator.pop(context)),
-                RaisedButton(
-                    child: Text('Open on Map'),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Colors.white,
-                    onPressed: (){
-                      print('Go to map page');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MapScreen(name, email, StartLat, StartLon)),
-                      );
-                    },
-//                    onPressed: () => Navigator.pop(context)
+    ],
+    )
+              ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Image.network(downurl1, fit:BoxFit.fill),
                 ),
-              ]),
-        ));
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Image.network(downurl2, fit:BoxFit.fill),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Image.network(downurl3, fit:BoxFit.fill),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Image.network(downurl4, fit:BoxFit.fill),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              heroTag: "btn2",
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MapScreen(name, email, StartLat, StartLon)),
+                );        },
+              child: Icon(Icons.check_circle),),
+          ),
+        ],
+    ),
+//        body: Center(
+//          child: Column(
+//              mainAxisAlignment: MainAxisAlignment.center,
+//              crossAxisAlignment: CrossAxisAlignment.center,
+//              children: <Widget>[
+//                Text("Description: "),
+//                Text(description.toString() + "\n"),
+////                Text(StartLat.toString()),
+////                Text(StartLon.toString()),
+//                Text("Time Spent:"),
+//                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
+//                    .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
+//                    .inHours
+//                    .toString() +
+//                    " hours and " +
+//                    DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
+//                    .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
+//                    .inSeconds
+//                    .toString() +
+//                    " Seconds"),
+////                Text(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000).toString()),
+////                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000).toString()),
+////                  Image.network(downurl1),
+//                RaisedButton(
+//                    child: Text('Back To Cleans Screen'),
+//                    color: Theme.of(context).primaryColor,
+//                    textColor: Colors.white,
+//                    onPressed: () => Navigator.pop(context)),
+//                RaisedButton(
+//                    child: Text('Open on Map'),
+//                    color: Theme.of(context).primaryColor,
+//                    textColor: Colors.white,
+//                    onPressed: (){
+//                      print('Go to map page');
+//                      Navigator.push(
+//                        context,
+//                        MaterialPageRoute(
+//                            builder: (context) => MapScreen(name, email, StartLat, StartLon)),
+//                      );
+//                    },
+////                    onPressed: () => Navigator.pop(context)
+//                ),
+//              ]
+//          ),
+//        )
+    );
   }
 }

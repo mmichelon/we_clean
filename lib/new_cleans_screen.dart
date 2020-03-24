@@ -163,7 +163,7 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
       'StartLon': userLocation.longitude,
       'StartTime': now
     });
-    updateScore();
+//    updateScore();
   }
 
   void deleteData() {
