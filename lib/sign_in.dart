@@ -62,7 +62,9 @@ void createRecord() async {
         databaseReference.collection(email).document('Score').setData({
           'Score': 0,
           'title': "Your First Clean!",
-          'description': "Congrats for helping the Environment! \nHere you can see you completed cleans!"
+          'description': "Congrats for helping the Environment! \nHere you can see you completed cleans!",
+          'StartLat': 39.729069,
+          'StartLon': -121.848194
         });
       }
     });

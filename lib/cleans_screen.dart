@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:we_clean/drawer.dart';
-import 'package:we_clean/map_screen.dart';
+import 'package:we_clean/map_clean_screen.dart';
 
 class CleansScreen extends StatefulWidget {
   final name;
@@ -24,7 +24,6 @@ class MyCleanScreenState extends State<CleansScreen> {
 
   @override
   Widget build(BuildContext context) {
-//    final title = 'Long List';
       return Scaffold(
         appBar: AppBar(
           title: Text(name + '\'s Cleans'),
@@ -35,6 +34,8 @@ class MyCleanScreenState extends State<CleansScreen> {
               padding: const EdgeInsets.all(10.0),
               child: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance.collection(email)
+                    .document('Cleans').collection('Cleans')
+
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -176,10 +177,6 @@ class SecondPage extends StatelessWidget {
                 child: Column(children: <Widget>[
                   Text("Description: "),
                   Text(description.toString() + "\n"),
-  //                Text(StartLat.toString()),
-  //                Text(StartLon.toString()),
-  //                Text(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000).toString()),
-  //                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000).toString()),
                 ],
               ),
 
@@ -187,37 +184,55 @@ class SecondPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 child: Column(children: <Widget>[
-
                 Text("Time Spent:"),
-                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
+                Text(StartTime == null || EndTime == null
+                        ? Text("No Time")
+                        : DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
                     .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
                     .inHours
                     .toString() +
                     " hours"
                     ),
-                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
+                Text(StartTime == null || EndTime == null
+                    ? Text("No Time")
+                    : DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
                     .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
-                    .inSeconds
+                    .inMinutes
+                    .toString() +
+                    " Minutes"),
+                Text(StartTime == null || EndTime == null
+                    ? Text("No Time")
+                    : (DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
+                    .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
+                    .inSeconds % 60)
                     .toString() +
                     " Seconds"),
-    ],
-    )
+                  ],
+                )
               ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: Image.network(downurl1, fit:BoxFit.fill),
+                  child: downurl1 == null
+                      ? Text("No image")
+                      : Image.network(downurl1, fit:BoxFit.fill),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: Image.network(downurl2, fit:BoxFit.fill),
+                  child: downurl2 == null
+                      ? Text("No image")
+                      : Image.network(downurl2, fit:BoxFit.fill),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: Image.network(downurl3, fit:BoxFit.fill),
+                  child: downurl3 == null
+                      ? Text("No image")
+                      : Image.network(downurl3, fit:BoxFit.fill),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: Image.network(downurl4, fit:BoxFit.fill),
+                  child: downurl4 == null
+                      ? Text("No image")
+                      : Image.network(downurl4, fit:BoxFit.fill),
                 ),
               ],
             ),
@@ -234,57 +249,12 @@ class SecondPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => MapScreen(name, email, StartLat, StartLon)),
+                      builder: (context) => MapCleanScreen(name, email, StartLat, StartLon, title, description)),
                 );        },
-              child: Icon(Icons.check_circle),),
+              child: Icon(Icons.map),),
           ),
         ],
-    ),
-//        body: Center(
-//          child: Column(
-//              mainAxisAlignment: MainAxisAlignment.center,
-//              crossAxisAlignment: CrossAxisAlignment.center,
-//              children: <Widget>[
-//                Text("Description: "),
-//                Text(description.toString() + "\n"),
-////                Text(StartLat.toString()),
-////                Text(StartLon.toString()),
-//                Text("Time Spent:"),
-//                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
-//                    .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
-//                    .inHours
-//                    .toString() +
-//                    " hours and " +
-//                    DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
-//                    .difference(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000))
-//                    .inSeconds
-//                    .toString() +
-//                    " Seconds"),
-////                Text(DateTime.fromMillisecondsSinceEpoch(StartTime.seconds*1000).toString()),
-////                Text(DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000).toString()),
-////                  Image.network(downurl1),
-//                RaisedButton(
-//                    child: Text('Back To Cleans Screen'),
-//                    color: Theme.of(context).primaryColor,
-//                    textColor: Colors.white,
-//                    onPressed: () => Navigator.pop(context)),
-//                RaisedButton(
-//                    child: Text('Open on Map'),
-//                    color: Theme.of(context).primaryColor,
-//                    textColor: Colors.white,
-//                    onPressed: (){
-//                      print('Go to map page');
-//                      Navigator.push(
-//                        context,
-//                        MaterialPageRoute(
-//                            builder: (context) => MapScreen(name, email, StartLat, StartLon)),
-//                      );
-//                    },
-////                    onPressed: () => Navigator.pop(context)
-//                ),
-//              ]
-//          ),
-//        )
+      ),
     );
   }
 }

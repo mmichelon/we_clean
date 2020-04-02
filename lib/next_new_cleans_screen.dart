@@ -151,12 +151,6 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
       print("In Next New Cleans init");
       print(userLocation);
     });
-
-//    Firestore.instance.collection(email).getDocuments().then((results) {
-//      setState(() {
-//        querySnapshot = results;
-//      });
-//    });
   }
 
   MyNextNewCleanScreenState(this.name, this.email, this._formData, this.startTime);
@@ -308,8 +302,6 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
 //  Future uploadPic(BuildContext context) async{
   void endRecord(_results) async {
     var _list = _results.values.toList();
-    final String _collection = email;
-    final Firestore _fireStore = Firestore.instance;
 
     print(_list[0]);
     print(_list[1]);
@@ -338,6 +330,7 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     try {
       databaseReference
           .collection(email)
+          .document('Cleans').collection('Cleans')
           .document(_list[0])
           .updateData({
         'EndLat': userLocation.latitude,

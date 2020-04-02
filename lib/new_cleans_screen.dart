@@ -153,8 +153,8 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
     var difference = sixtyDaysFromNow.difference(now);
     print("difference: ");
     print(difference);
-
     await databaseReference.collection(email) //use email to store collection
+        .document('Cleans').collection('Cleans')
         .document(_list[0]) //clean name
         .setData({
       'title': _list[0],
@@ -163,6 +163,15 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
       'StartLon': userLocation.longitude,
       'StartTime': now
     });
+//    await databaseReference.collection(email) //use email to store collection
+//        .document(_list[0]) //clean name
+//        .setData({
+//      'title': _list[0],
+//      'description': _list[1], //set inner values
+//      'StartLat': userLocation.latitude,
+//      'StartLon': userLocation.longitude,
+//      'StartTime': now
+//    });
 //    updateScore();
   }
 
