@@ -66,7 +66,33 @@ class _MyDrawerState extends State<MyDrawer> {
                         fontSize: 18,
                       ),
                     );
-                  })
+                  }),
+                  FutureBuilder( //Used to get score from firebase
+                    // This assumes you have a project on Firebase with a firestore database.
+                      future: Firestore.instance.collection(email).document("Profile_Pic").get(),
+                      initialData: null,
+                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                        if(snapshot.data == null){
+                          return CircularProgressIndicator();
+                        }
+                        DocumentSnapshot doc = snapshot.data;
+//                        return Image.network(doc.data['Profile_Pic'],
+//                             width: 100,
+//                            height: 150,
+//                            fit:BoxFit.fill);
+                        return ClipRRect(
+                            borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                        topRight: Radius.circular(8.0),
+                        ),
+                          child: Image.network(
+                              doc.data['Profile_Pic'],
+//                              width: 200,
+                              height: 80,
+                              fit:BoxFit.fill
+                          ),
+                        );
+                      })
                 ],
               ),
             ),

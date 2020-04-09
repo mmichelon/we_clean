@@ -5,7 +5,7 @@ import 'package:we_clean/drawer.dart';
 
 import 'package:geolocator/geolocator.dart';
 
-//import 'package:we_clean/new_cleans_screen.dart';
+import 'package:we_clean/cleans_screen.dart';
 
 //For images
 import 'dart:io';
@@ -181,7 +181,7 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
                     ? RaisedButton(
                     onPressed: getImage1,
                     child: const Text(
-                        'Choose Image 1',
+                        'Image of area before 1',
                         style: TextStyle(fontSize: 20)
                     ),
                   )
@@ -194,7 +194,7 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
                       ? RaisedButton(
                     onPressed: getImage2,
                     child: const Text(
-                        'Choose Image 2',
+                        'Image of area before 2',
                         style: TextStyle(fontSize: 20)
                     ),
                   )
@@ -206,7 +206,7 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
                       ? RaisedButton(
                     onPressed: getImage3,
                     child: const Text(
-                        'Choose Image 3',
+                        'Image of area after 3',
                         style: TextStyle(fontSize: 20)
                     ),
                   )
@@ -218,7 +218,7 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
                       ? RaisedButton(
                     onPressed: getImage4,
                     child: const Text(
-                        'Choose Image 4',
+                        'Image of area after 4',
                         style: TextStyle(fontSize: 20)
                     ),
                   )
@@ -243,6 +243,11 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
                 onPressed: () {
 //                  uploadPic(context);
                   _endClean();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CleansScreen(name, email)),
+                  );
 //                  endRecord(_formData);
                   print("Down URLS Exit");
                   print(downurl1);

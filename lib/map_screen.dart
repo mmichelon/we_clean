@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
-import 'dart:math';
-import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:we_clean/drawer.dart';
+
+import 'package:fluster/fluster.dart';
+import 'package:we_clean/helpers/map_marker.dart';
+import 'package:we_clean/helpers/map_helper.dart';
 
 class MapScreen extends StatefulWidget {
   final name;
@@ -37,7 +39,7 @@ class MyMapState extends State<MapScreen> {
 
   MyMapState(this.name, this.email, this.StartLat, this.StartLon);
 
-  static final LatLng center = const LatLng(-33.86711, 151.1947171);
+  static final LatLng center = const LatLng(39.729656, -121.846247);
   var marker;
 
   List<String> cleansListTitle = [];
@@ -45,10 +47,11 @@ class MyMapState extends State<MapScreen> {
   List<double> cleansListLat = [];
   List<double> cleansListLon = [];
 
-  BitmapDescriptor pinLocationIcon;
-  Set<Marker> _markers = {};
-  Completer<GoogleMapController> _controller = Completer();
+//  BitmapDescriptor pinLocationIcon;
+//  Set<Marker> _markers = {};
+//  Completer<GoogleMapController> _controller = Completer();
 
+/////////////////////////////////////////////////////////////////
   @override
   void initState(){
 
@@ -62,91 +65,250 @@ class MyMapState extends State<MapScreen> {
     getData();
   }
 
-  void setCustomMapPin() async {
-    pinLocationIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5),
-        'assets/flutter_logo.jpg');
+  final Completer<GoogleMapController> _mapController = Completer();
+
+  /// Set of displayed markers and cluster markers on the map
+  final Set<Marker> _markers = Set();
+
+  /// Minimum zoom at which the markers will cluster
+  final int _minClusterZoom = 0;
+
+  /// Maximum zoom at which the markers will cluster
+  final int _maxClusterZoom = 19;
+
+  /// [Fluster] instance used to manage the clusters
+  Fluster<MapMarker> _clusterManager;
+
+  /// Current map zoom. Initial zoom will be 15, street level
+  double _currentZoom = 15;
+
+  /// Map loading flag
+  bool _isMapLoading = true;
+
+  /// Markers loading flag
+  bool _areMarkersLoading = true;
+
+  /// Url image used on normal markers
+  final String _markerImageUrl =
+      'https://img.icons8.com/office/80/000000/marker.png';
+
+  /// Color of the cluster circle
+  final Color _clusterColor = Colors.blue;
+
+  /// Color of the cluster text
+  final Color _clusterTextColor = Colors.white;
+
+  final List<LatLng> _cleanLocations = [];
+
+  /// Called when the Google Map widget is created. Updates the map loading state
+  /// and inits the markers.
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController.complete(controller);
+
+    setState(() {
+      _isMapLoading = false;
+    });
+
+    _initMarkers();
+  }
+
+  /// Inits [Fluster] and all the markers with network images and updates the loading state.
+  void _initMarkers() async {
+    final List<MapMarker> markers = [];
+    for(var i = 0; i < cleansListLat.length; i++){
+      _cleanLocations.add(LatLng(cleansListLat[i], cleansListLon[i]));
+    }
+
+    for (LatLng markerLocation in _cleanLocations) {
+      final BitmapDescriptor markerImage =
+      await MapHelper.getMarkerImageFromUrl(_markerImageUrl);
+
+      markers.add(
+        MapMarker(
+          id: _cleanLocations.indexOf(markerLocation).toString(),
+          Title: cleansListTitle[0],
+          Description: cleansListDesc[0],
+          position: markerLocation,
+          icon: markerImage,
+        ),
+      );
+    }
+
+    _clusterManager = await MapHelper.initClusterManager(
+      markers,
+      _minClusterZoom,
+      _maxClusterZoom,
+    );
+
+    await _updateMarkers();
+  }
+
+  /// Gets the markers and clusters to be displayed on the map for the current zoom level and
+  /// updates state.
+  Future<void> _updateMarkers([double updatedZoom]) async {
+    if (_clusterManager == null || updatedZoom == _currentZoom) return;
+
+    if (updatedZoom != null) {
+      _currentZoom = updatedZoom;
+    }
+
+    setState(() {
+      _areMarkersLoading = true;
+    });
+
+    final updatedMarkers = await MapHelper.getClusterMarkers(
+      _clusterManager,
+      _currentZoom,
+      _clusterColor,
+      _clusterTextColor,
+      80,
+    );
+
+    _markers
+      ..clear()
+      ..addAll(updatedMarkers);
+
+    setState(() {
+      _areMarkersLoading = false;
+    });
   }
 
   @override
-  Widget build(BuildContext context){
-    LatLng pinPosition = LatLng(37.3797536, -122.1017334);
-    LatLng pinCurclean = LatLng(StartLat, StartLon);
-//    LatLng userLatLng = LatLng(userLocation.latitude, userLocation.longitude);
-
-    // these are the minimum required values to set
-    // the camera position
-    CameraPosition initialLocation = CameraPosition(
-        zoom: 16,
-        bearing: 30,
-        target: center
-    );
-
-    return new Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Cleans'),
-      ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height-180,
-            width: MediaQuery.of(context).size.width,
-            child: GoogleMap(
-//                onMapCreated: _onMapCreated,
-
-              myLocationEnabled: true,
-              compassEnabled: true,
-                  markers: _markers,
-                  initialCameraPosition: initialLocation,
-                  onMapCreated: (GoogleMapController controller) {
-//                controller.setMapStyle(Utils.mapStyles);
-                _controller.complete(controller);
-
-
-
-              }),
-          ),
-        FloatingActionButton(
-          onPressed: () {
-            getData();
-            for(var i = 10; i < 20; i++){
-              setState(() {
-                _markers.add(
-                    Marker(
-                        infoWindow: InfoWindow(
-                          title: cleansListTitle[i],
-                          snippet: cleansListDesc[i],
-                        ),
-//                        markerId: MarkerId('<MARKER_ID>'),
-                        markerId: MarkerId(cleansListTitle[i]),
-
-                        position: LatLng(cleansListLat[i], cleansListLon[i]),
-                        icon: pinLocationIcon
-                    )
-                );
-              });
-
-            print(cleansListTitle[i]);
-            print(cleansListDesc[i]);
-            print(cleansListLat[i]);
-            print(cleansListLon[i]);
-            print("");
-            }
-            print("cleansList.length"); // result 0 and it will be executed first
-            print(cleansListTitle.length); // result 0 and it will be executed first
-          },
-          child: Icon(Icons.navigation),
-          backgroundColor: Colors.green,
+  Widget build(BuildContext context) {
+    return Scaffold(
+    appBar: AppBar(
+          title: Text('All your cleans'),
         ),
-        ],
+        body: Stack(
+          children: <Widget>[
+        // Google Map widget
+        Opacity(
+        opacity: _isMapLoading ? 0 : 1,
+          child: GoogleMap(
+            myLocationEnabled: true,
+            mapToolbarEnabled: false,
+            initialCameraPosition: CameraPosition(
+              target: center,
+              zoom: _currentZoom,
+            ),
+            markers: _markers,
+            onMapCreated: (controller) => _onMapCreated(controller),
+            onCameraMove: (position) => _updateMarkers(position.zoom),
+          ),
+        ),
+
+        // Map loading indicator
+        Opacity(
+          opacity: _isMapLoading ? 1 : 0,
+          child: Center(child: CircularProgressIndicator()),
+        ),
+
+        // Map markers loading indicator
+        if (_areMarkersLoading)
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Card(
+          elevation: 2,
+          color: Colors.grey.withOpacity(0.9),
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: Text(
+              'Loading',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
       ),
-      drawer: MyDrawer(),
+    ),
+    ],
+    ),
+    drawer: MyDrawer(),
+
     );
   }
+//  @override
+//  void initState(){
+//
+//    _getLocation().then((position) {
+//      userLocation = position;
+//
+//      print("In general map");
+//      print(userLocation);
+//    });
+//    super.initState();
+//    getData();
+//  }
+//
+//  @override
+//  Widget build(BuildContext context){
+//
+//    // these are the minimum required values to set
+//    // the camera position
+//    CameraPosition initialLocation = CameraPosition(
+//        zoom: 16,
+//        bearing: 30,
+//        target: center
+//    );
+//
+//    return new Scaffold(
+//      appBar: AppBar(
+//        title: const Text('Your Cleans'),
+//      ),
+//      body: Column(
+//        children: <Widget>[
+//          Container(
+//            height: MediaQuery.of(context).size.height-180,
+//            width: MediaQuery.of(context).size.width,
+//            child: GoogleMap(
+////                onMapCreated: _onMapCreated,
+//
+//              myLocationEnabled: true,
+//              compassEnabled: true,
+//                  markers: _markers,
+//                  initialCameraPosition: initialLocation,
+//                  onMapCreated: (GoogleMapController controller) {
+//                _controller.complete(controller);
+//              }),
+//          ),
+//        FloatingActionButton(
+//          onPressed: () {
+////            getData();
+//            for(var i = 0; i < cleansListTitle.length; i++){
+//              setState(() {
+//                _markers.add(
+//                    Marker(
+//                        infoWindow: InfoWindow(
+//                          title: cleansListTitle[i],
+//                          snippet: cleansListDesc[i],
+//                        ),
+//                        markerId: MarkerId(cleansListTitle[i]),
+//
+//                        position: LatLng(cleansListLat[i], cleansListLon[i]),
+//                        icon: pinLocationIcon
+//                    )
+//                );
+//              });
+////            print(cleansListTitle[i]);
+//            print("");
+//            }
+//            print("cleansList.length"); // result 0 and it will be executed first
+//            print(cleansListTitle.length); // result 0 and it will be executed first
+//          },
+//          child: Icon(Icons.navigation),
+//          backgroundColor: Colors.green,
+//        ),
+//        ],
+//      ),
+//      drawer: MyDrawer(),
+//    );
+//  }
 
   Future getData() async {
     return await databaseReference
         .collection(email)
+        .document('Cleans').collection('Cleans')
         .getDocuments()
         .then((QuerySnapshot snapshot) {
       snapshot.documents.forEach((f) {
@@ -154,8 +316,7 @@ class MyMapState extends State<MapScreen> {
         cleansListDesc.add(f.data['description']);
         cleansListLat.add(f.data['StartLat']);
         cleansListLon.add(f.data['StartLon']);
-
-//        print('${f.data}');
+        print('${f.data}');
       }
       );
     });
@@ -175,169 +336,4 @@ class MyMapState extends State<MapScreen> {
   Future getDriversList() async {
     return await Firestore.instance.collection(email).getDocuments();
   }
-
-}
-
-
-class Utils {
-  static String mapStyles = '''[
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f5f5f5"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#f5f5f5"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#bdbdbd"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#eeeeee"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#e5e5e5"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#ffffff"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dadada"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#e5e5e5"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#eeeeee"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#c9c9c9"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  }
-]''';
 }

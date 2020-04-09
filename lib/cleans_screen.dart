@@ -6,21 +6,21 @@ import 'package:we_clean/map_clean_screen.dart';
 class CleansScreen extends StatefulWidget {
   final name;
   final email;
-  final items = List<String>.generate(50, (i) => "Item $i");
+//  final items = List<String>.generate(50, (i) => "Item $i");
 
   CleansScreen(this.name, this.email);
   @override
-  State<CleansScreen> createState() => MyCleanScreenState(name, email, items);
+  State<CleansScreen> createState() => MyCleanScreenState(name, email);
 }
 
 class MyCleanScreenState extends State<CleansScreen> {
   final name;
   final email;
 
-  final List<String> items;
+//  final List<String> items;
   final databaseReference = Firestore.instance;
 
-  MyCleanScreenState(this.name, this.email, this.items);
+  MyCleanScreenState(this.name, this.email);
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +55,8 @@ class MyCleanScreenState extends State<CleansScreen> {
                               description: document['description'],
                               StartLat: document['StartLat'],
                               StartLon: document['StartLon'],
+                              EndLat: document['EndLat'],
+                              EndLon: document['EndLon'],
                               StartTime: document['StartTime'],
                               EndTime: document['EndTime'],
                               downurl1: document['downurl1'],
@@ -75,8 +77,8 @@ class MyCleanScreenState extends State<CleansScreen> {
 }
 
 class CustomCard extends StatelessWidget {
-  CustomCard({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.StartTime, this.EndTime,
-    this.downurl1, this.downurl2, this.downurl3, this.downurl4});
+  CustomCard({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.EndLat, this.EndLon,
+    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4});
   final name;
   final email;
 
@@ -85,6 +87,8 @@ class CustomCard extends StatelessWidget {
 
   final StartLat;
   final StartLon;
+  final EndLat;
+  final EndLon;
 
   final StartTime;
   final EndTime;
@@ -115,6 +119,8 @@ class CustomCard extends StatelessWidget {
                                   description: description,
                                   StartLat: StartLat,
                                   StartLon: StartLon,
+                                  EndLat: EndLat,
+                                  EndLon: EndLon,
                                   StartTime: StartTime,
                                   EndTime: EndTime,
                                   downurl1: downurl1,
@@ -131,8 +137,8 @@ class CustomCard extends StatelessWidget {
 }
 
 class SecondPage extends StatelessWidget {
-  SecondPage({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.StartTime, this.EndTime,
-        this.downurl1, this.downurl2, this.downurl3, this.downurl4});
+  SecondPage({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.EndLat, this.EndLon,
+    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4});
   final name;
   final email;
 
@@ -141,6 +147,8 @@ class SecondPage extends StatelessWidget {
 
   final StartLat;
   final StartLon;
+  final EndLat;
+  final EndLon;
 
   final StartTime;
   final EndTime;
@@ -166,20 +174,12 @@ class SecondPage extends StatelessWidget {
               mainAxisSpacing: 10,
               crossAxisCount: 2,
               children: <Widget>[
-//                Container(
-//                  padding: const EdgeInsets.all(8),
-//                  child: downurl1 == null
-//                      ? Text("No image")
-//                      : Image.network(downurl1, fit:BoxFit.fill),
-////                    color: Colors.green[100],
-//                ),
               Container(
                 child: Column(children: <Widget>[
                   Text("Description: "),
                   Text(description.toString() + "\n"),
                 ],
               ),
-
               ),
               Container(
                 padding: const EdgeInsets.all(8),
@@ -249,8 +249,9 @@ class SecondPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => MapCleanScreen(name, email, StartLat, StartLon, title, description)),
-                );        },
+                      builder: (context) => MapCleanScreen(name, email, StartLat, StartLon, EndLat, EndLon, title, description)),
+                );
+              },
               child: Icon(Icons.map),),
           ),
         ],

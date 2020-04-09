@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
-import 'dart:math';
-import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -15,13 +13,15 @@ class MapCleanScreen extends StatefulWidget {
 
   final StartLat;
   final StartLon;
+  final EndLat;
+  final EndLon;
 
   final title;
   final description;
 
-  MapCleanScreen(this.name, this.email, this.StartLat, this.StartLon, this.title, this.description);
+  MapCleanScreen(this.name, this.email, this.StartLat, this.StartLon, this.EndLat, this.EndLon, this.title, this.description);
   @override
-  State<MapCleanScreen> createState() => MyMapCleanState(name, email, StartLat, StartLon, title, description);
+  State<MapCleanScreen> createState() => MyMapCleanState(name, email, StartLat, StartLon, EndLat, EndLon, title, description);
 }
 
 class MyMapCleanState extends State<MapCleanScreen> {
@@ -30,6 +30,8 @@ class MyMapCleanState extends State<MapCleanScreen> {
 
   final StartLat;
   final StartLon;
+  final EndLat;
+  final EndLon;
 
   final title;
   final description;
@@ -42,7 +44,7 @@ class MyMapCleanState extends State<MapCleanScreen> {
 //  final databaseReference = Firestore.instance;
 //  QuerySnapshot querySnapshot;
 
-  MyMapCleanState(this.name, this.email, this.StartLat, this.StartLon, this.title, this.description);
+  MyMapCleanState(this.name, this.email, this.StartLat, this.StartLon, this.EndLat, this.EndLon, this.title, this.description);
 
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
@@ -64,15 +66,15 @@ class MyMapCleanState extends State<MapCleanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    LatLng pinPosition = LatLng(37.3797536, -122.1017334);
-    LatLng pinCurclean = LatLng(StartLat, StartLon);
+    LatLng pinCurcleanStart = LatLng(StartLat, StartLon);
+    LatLng pinCurcleanEnd = LatLng(EndLat, EndLon);
 
     // these are the minimum required values to set
     // the camera position
     CameraPosition initialLocation = CameraPosition(
         zoom: 16,
         bearing: 30,
-        target: pinCurclean
+        target: pinCurcleanStart
     );
 
     return new Scaffold(
@@ -99,28 +101,27 @@ class MyMapCleanState extends State<MapCleanScreen> {
                               title: title,
                               snippet: description,
                             ),
-                            markerId: MarkerId('<MARKER_ID>'),
-                            position: pinCurclean,
+                            markerId: MarkerId(title),
+                            position: pinCurcleanStart,
                             icon: pinLocationIcon
                         )
                     );
+//                    _markers.add(
+//                        Marker(
+//                            infoWindow: InfoWindow(
+//                              title: "End Clean",
+////                              snippet: description,
+//                            ),
+//                            markerId: MarkerId(title),
+//                            position: pinCurcleanEnd,
+//                            icon: pinLocationIcon
+//                        )
+//                    );
                   });
                 }),
           ),
         ],
       ),
-
-//      floatingActionButton: FloatingActionButton(onPressed: () {
-//        _onAddMarkerButtonPressed();
-//        mapController.animateCamera(
-//          CameraUpdate.newCameraPosition(
-//            CameraPosition(
-//                target: LatLng(userLocation.latitude, userLocation.longitude), zoom: 10.0),
-//          ),
-//        );
-//      },
-//        child: Icon(Icons.my_location),
-//      ),
 
       drawer: MyDrawer(),
     );
