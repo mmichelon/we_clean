@@ -7,6 +7,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:we_clean/drawer.dart';
 
+import 'package:we_clean/map_screen.dart';
+
+import 'package:fluster/fluster.dart';
+import 'package:we_clean/helpers/map_marker.dart';
+import 'package:we_clean/helpers/map_helper.dart';
+
 class MapCleanScreen extends StatefulWidget {
   final name;
   final email;
@@ -55,13 +61,6 @@ class MyMapCleanState extends State<MapCleanScreen> {
   @override
   void initState() {
     super.initState();
-//    setCustomMapPin();
-  }
-
-  void setCustomMapPin() async {
-    pinLocationIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5),
-        'assets/flutter_logo.jpg');
   }
 
   @override
@@ -106,17 +105,17 @@ class MyMapCleanState extends State<MapCleanScreen> {
                             icon: pinLocationIcon
                         )
                     );
-//                    _markers.add(
-//                        Marker(
-//                            infoWindow: InfoWindow(
-//                              title: "End Clean",
-////                              snippet: description,
-//                            ),
-//                            markerId: MarkerId(title),
-//                            position: pinCurcleanEnd,
-//                            icon: pinLocationIcon
-//                        )
-//                    );
+                    _markers.add(
+                        Marker(
+                            infoWindow: InfoWindow(
+                              title: "End",
+                              snippet: "",
+                            ),
+                            markerId: MarkerId("End"),
+                            position: pinCurcleanEnd,
+                            icon: pinLocationIcon
+                        )
+                    );
                   });
                 }),
           ),

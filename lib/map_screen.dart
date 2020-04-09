@@ -69,46 +69,34 @@ class MyMapState extends State<MapScreen> {
 
   /// Set of displayed markers and cluster markers on the map
   final Set<Marker> _markers = Set();
-
   /// Minimum zoom at which the markers will cluster
   final int _minClusterZoom = 0;
-
   /// Maximum zoom at which the markers will cluster
   final int _maxClusterZoom = 19;
-
   /// [Fluster] instance used to manage the clusters
   Fluster<MapMarker> _clusterManager;
-
   /// Current map zoom. Initial zoom will be 15, street level
   double _currentZoom = 15;
-
   /// Map loading flag
   bool _isMapLoading = true;
-
   /// Markers loading flag
   bool _areMarkersLoading = true;
-
   /// Url image used on normal markers
   final String _markerImageUrl =
       'https://img.icons8.com/office/80/000000/marker.png';
-
   /// Color of the cluster circle
   final Color _clusterColor = Colors.blue;
-
   /// Color of the cluster text
   final Color _clusterTextColor = Colors.white;
-
   final List<LatLng> _cleanLocations = [];
 
   /// Called when the Google Map widget is created. Updates the map loading state
   /// and inits the markers.
   void _onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
-
     setState(() {
       _isMapLoading = false;
     });
-
     _initMarkers();
   }
 
@@ -118,11 +106,9 @@ class MyMapState extends State<MapScreen> {
     for(var i = 0; i < cleansListLat.length; i++){
       _cleanLocations.add(LatLng(cleansListLat[i], cleansListLon[i]));
     }
-
     for (LatLng markerLocation in _cleanLocations) {
       final BitmapDescriptor markerImage =
       await MapHelper.getMarkerImageFromUrl(_markerImageUrl);
-
       markers.add(
         MapMarker(
           id: _cleanLocations.indexOf(markerLocation).toString(),
