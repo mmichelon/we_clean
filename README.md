@@ -1,16 +1,25 @@
 # we_clean
+Senior Project
+Chico State
+CSCI 490 Capstone
 
-Senior Project Maxwell Michelon
+## Project Overview
+We_Clean is an android application that is designed to motivate people to pick up trash.
+You can use the app to track your cleans, and are rewarded points for each clean.
+A user's score is 
 
-## Getting Started
+## Project Expectations
+Using Flutter to design an android application.
 
-This project is a starting point for a Flutter application.
+Store information in a database of types:
+- Text
+- GPS Information
+- Images
 
-A few resources to get you started if this is your first Flutter project:
+Display information from database on a digital topographic map(Google Maps).
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+##Tools for development
+- Android Studio
+- Android Mobile Device (Android 9.0 or later)
+- Google Maps API
+- Firebase and Firestore

@@ -35,7 +35,6 @@ class MyCleanScreenState extends State<CleansScreen> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance.collection(email)
                     .document('Cleans').collection('Cleans')
-
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -127,8 +126,6 @@ class CustomCard extends StatelessWidget {
                                   downurl2: downurl2,
                                   downurl3: downurl3,
                                   downurl4: downurl4,
-
-
                               )));
                     }),
               ],
@@ -157,6 +154,8 @@ class SecondPage extends StatelessWidget {
   final downurl2;
   final downurl3;
   final downurl4;
+
+  final databaseReference = Firestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -212,25 +211,25 @@ class SecondPage extends StatelessWidget {
               ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: downurl1 == null
+                  child: downurl1 == ""
                       ? Text("No image")
                       : Image.network(downurl1, fit:BoxFit.fill),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: downurl2 == null
+                  child: downurl2 == ""
                       ? Text("No image")
                       : Image.network(downurl2, fit:BoxFit.fill),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: downurl3 == null
+                  child: downurl3 == ""
                       ? Text("No image")
                       : Image.network(downurl3, fit:BoxFit.fill),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: downurl4 == null
+                  child: downurl4 == ""
                       ? Text("No image")
                       : Image.network(downurl4, fit:BoxFit.fill),
                 ),
@@ -241,6 +240,23 @@ class SecondPage extends StatelessWidget {
       ),
       floatingActionButton: Stack(
         children: <Widget>[
+          Align(
+//            padding: EdgeInsets.all(10.0),
+            alignment: Alignment.bottomLeft,
+            child: FloatingActionButton(
+              heroTag: "btn1",
+              onPressed: () {
+                deleteClean(title);
+                updateScore();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CleansScreen(name,email)),
+                );
+              },
+              child: Icon(Icons.delete),
+            ),
+          ),
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
@@ -257,5 +273,40 @@ class SecondPage extends StatelessWidget {
         ],
       ),
     );
+  }
+  void deleteClean(curDocument) {
+    try {
+      databaseReference
+          .collection(email)
+          .document('Cleans')
+          .collection('Cleans')
+          .document(curDocument)
+          .delete();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void updateScore() async{
+    try {
+      QuerySnapshot querySnapshot = await Firestore.instance.collection(email).
+      document("Cleans").collection("Cleans").getDocuments();
+      print("list Length");
+      print(querySnapshot.documents.length);
+
+      if(querySnapshot.documents.length <= 0){
+        //Set new value for points
+        databaseReference.collection(email).document('Points').setData({
+        'Points': 0,
+        });
+      }else {
+        print("Points exists");
+        databaseReference.collection(email).document('Points').setData({
+        'Points': (querySnapshot.documents.length * 10),
+        });
+      }
+    }catch(e){
+      print("Error");
+    }
   }
 }

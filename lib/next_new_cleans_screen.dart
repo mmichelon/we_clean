@@ -10,11 +10,8 @@ import 'package:we_clean/cleans_screen.dart';
 //For images
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart'; // For File Upload To Firestore
-//import 'package:flutter/material.dart';
-//import 'package:image_picker/image_picker.dart'; // For Image Picker
 import 'package:path/path.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:async';
 
 
@@ -23,11 +20,13 @@ class NextNewCleanScreen extends StatefulWidget {
   final email;
   final _formData;
   final startTime;
+  final StartLat;
+  final StartLon;
 //  final items = List<String>.generate(50, (i) => "Item $i");
 
-  NextNewCleanScreen(this.name, this.email, this._formData, this.startTime);
+  NextNewCleanScreen(this.name, this.email, this._formData, this.startTime, this.StartLat, this.StartLon);
   @override
-  State<NextNewCleanScreen> createState() => MyNextNewCleanScreenState(name, email, _formData, startTime);
+  State<NextNewCleanScreen> createState() => MyNextNewCleanScreenState(name, email, _formData, startTime, StartLat, StartLon);
 }
 
 class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
@@ -35,6 +34,9 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
   final email;
   final _formData;
   final startTime;
+
+  final StartLat;
+  final StartLon;
 
   var _list;
   final databaseReference = Firestore.instance;
@@ -97,16 +99,24 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
   }
 
   Future uploadPic(_image1, _image2, _image3, _image4) async{
-    print("Uploading Pic 1");
-    String fileName1 = basename(_image1.path);
-    StorageReference firebaseStorageRef1 = FirebaseStorage.instance.ref().child(fileName1);
+    if(_image1 == null) {
+      downurl1 = "";
+    }else{
+      print("Uploading Pic 1");
+      String fileName1 = basename(_image1.path);
+      StorageReference firebaseStorageRef1 = FirebaseStorage.instance.ref()
+          .child(fileName1);
 
-    StorageUploadTask uploadTask1 = firebaseStorageRef1.putFile(_image1);
-    downurl1 = await (await uploadTask1.onComplete).ref.getDownloadURL();
-    print("downurl1");
-    print(downurl1);
+      StorageUploadTask uploadTask1 = firebaseStorageRef1.putFile(_image1);
+      downurl1 = await (await uploadTask1.onComplete).ref.getDownloadURL();
+      print("downurl1");
+      print(downurl1);
+    }
     //////////////////////////////
-    print("Uploading Pic 2");
+    if(_image2 == null) {
+      downurl2 = "";
+    }else{
+      print("Uploading Pic 2");
     String fileName2 = basename(_image2.path);
     StorageReference firebaseStorageRef2 = FirebaseStorage.instance.ref().child(fileName2);
 
@@ -114,8 +124,13 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     downurl2 = await (await uploadTask2.onComplete).ref.getDownloadURL();
     print("downur2");
     print(downurl2);
+
+  }
     //////////////////////////////
-    print("Uploading Pic 3");
+    if(_image3 == null) {
+      downurl3 = "";
+    }else{
+      print("Uploading Pic 3");
     String fileName3 = basename(_image3.path);
     StorageReference firebaseStorageRef3 = FirebaseStorage.instance.ref().child(fileName3);
 
@@ -123,8 +138,12 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     downurl3 = await (await uploadTask3.onComplete).ref.getDownloadURL();
     print("downurl3");
     print(downurl3);
+}
     //////////////////////////////
-    print("Uploading Pic 4");
+    if(_image4 == null) {
+      downurl4 = "";
+    }else{
+      print("Uploading Pic 4");
     String fileName4 = basename(_image4.path);
     StorageReference firebaseStorageRef4 = FirebaseStorage.instance.ref().child(fileName4);
 
@@ -132,12 +151,12 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     downurl4 = await (await uploadTask4.onComplete).ref.getDownloadURL();
     print("downurl4");
     print(downurl4);
-
-    StorageTaskSnapshot taskSnapshot=await uploadTask1.onComplete;
-    setState(() {
-      print("Profile Picture uploaded");
-//      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
-    });
+}
+//    StorageTaskSnapshot taskSnapshot=await uploadTask1.onComplete;
+//    setState(() {
+//      print("Profile Picture uploaded");
+////      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
+//    });
   }
 
   void initState() {
@@ -153,7 +172,7 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     });
   }
 
-  MyNextNewCleanScreenState(this.name, this.email, this._formData, this.startTime);
+  MyNextNewCleanScreenState(this.name, this.email, this._formData, this.startTime, this.StartLat, this.StartLon);
 
   @override
   Widget build(BuildContext context) {
@@ -281,31 +300,17 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     );
   }
 
-//  Widget _buildSubmitButton() {
-//    return RaisedButton(
-//      onPressed: () {
-//        _endClean();
-//      },
-//      child: Text('End current Clean'),
-//    );
-//  }
-
 //  void _endClean() {
   Future _endClean() async {
     //Wait for images to be posted to firebase
     await uploadPic(_image1, _image2, _image3, _image4);
-    ;
-    //Then create record
+
     print("Before wait");
-    await Future.delayed(Duration(seconds: 5));
     print("After wait");
-    endRecord(_formData);
-//      endRecord(_formData, downurl1, downurl2, downurl3, downurl4);
+    await endRecord(_formData);
   }
 
-//  void endRecord(_results, downurl1, downurl2, downurl3, downurl4) async {
-//  Future uploadPic(BuildContext context) async{
-  void endRecord(_results) async {
+  Future endRecord(_results) async {
     var _list = _results.values.toList();
 
     print(_list[0]);
@@ -337,7 +342,13 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
           .collection(email)
           .document('Cleans').collection('Cleans')
           .document(_list[0])
-          .updateData({
+          .setData({
+        'title': _list[0],
+        'description': _list[1], //set inner values
+        'StartLat': StartLat,
+        'StartLon': StartLon,
+        'StartTime': startTime,
+
         'EndLat': userLocation.latitude,
         'EndLon': userLocation.longitude,
         'EndTime': now,
@@ -353,14 +364,27 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     }
     updateScore();
   }
+  void updateScore() async{
+    try {
+      QuerySnapshot querySnapshot = await Firestore.instance.collection(email).
+      document("Cleans").collection("Cleans").getDocuments();
+      print("list Length");
+      print(querySnapshot.documents.length);
 
-  void updateScore() async {
-    Firestore.instance.
-    collection(email).
-    document('Score').
-    updateData(<String, dynamic> {
-      'Score': FieldValue.increment(10),
-    });
+      if(querySnapshot.documents.length <= 0){
+        //Set new value for points
+        databaseReference.collection(email).document('Points').setData({
+          'Points': 0,
+        });
+      }else {
+        print("Points exists");
+        databaseReference.collection(email).document('Points').setData({
+          'Points': (querySnapshot.documents.length * 10),
+        });
+      }
+    }catch(e){
+      print("Error");
+    }
   }
 
   Future<Position> _getLocation() async {

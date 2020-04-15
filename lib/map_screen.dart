@@ -82,8 +82,8 @@ class MyMapState extends State<MapScreen> {
   /// Markers loading flag
   bool _areMarkersLoading = true;
   /// Url image used on normal markers
-  final String _markerImageUrl =
-      'https://img.icons8.com/office/80/000000/marker.png';
+  final String _markerImageUrlStart = 'https://img.icons8.com/office/80/000000/marker.png';
+
   /// Color of the cluster circle
   final Color _clusterColor = Colors.blue;
   /// Color of the cluster text
@@ -106,14 +106,18 @@ class MyMapState extends State<MapScreen> {
     for(var i = 0; i < cleansListLat.length; i++){
       _cleanLocations.add(LatLng(cleansListLat[i], cleansListLon[i]));
     }
+//    var i = 0;
     for (LatLng markerLocation in _cleanLocations) {
+//      i++;
+      print("markerLocation: ");
+      print(markerLocation);
       final BitmapDescriptor markerImage =
-      await MapHelper.getMarkerImageFromUrl(_markerImageUrl);
+      await MapHelper.getMarkerImageFromUrl(_markerImageUrlStart);
       markers.add(
         MapMarker(
           id: _cleanLocations.indexOf(markerLocation).toString(),
-          Title: cleansListTitle[0],
-          Description: cleansListDesc[0],
+          Title: cleansListTitle[_cleanLocations.indexOf(markerLocation)],
+          Description: cleansListDesc[_cleanLocations.indexOf(markerLocation)],
           position: markerLocation,
           icon: markerImage,
         ),
@@ -317,9 +321,5 @@ class MyMapState extends State<MapScreen> {
       currentLocation = null;
     }
     return currentLocation;
-  }
-
-  Future getDriversList() async {
-    return await Firestore.instance.collection(email).getDocuments();
   }
 }

@@ -74,7 +74,8 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
             _buildPasswordField(),
             _buildSubmitButton(),
           ],
-        ));
+        )
+    );
   }
 
   Widget _buildEmailField() {
@@ -129,52 +130,14 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
       print("_formData");
 
       print(_formData);
-      createRecord(_formData);
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => NextNewCleanScreen(name, email, _formData, startTime)),
+            builder: (context) => NextNewCleanScreen(name, email, _formData, new DateTime.now(), userLocation.latitude, userLocation.longitude)),
       );
     }
   }
 
-  void createRecord(_results) async {
-    var _list = _results.values.toList();
-
-    print(_list[0]);
-    print(_list[1]);
-    print(userLocation.latitude);
-    print(userLocation.longitude);
-
-    //Calculate time
-    var now = new DateTime.now();
-    startTime = now;
-    var sixtyDaysFromNow = now.add(new Duration(days: 60));
-    var difference = sixtyDaysFromNow.difference(now);
-    print("difference: ");
-    print(difference);
-    await databaseReference.collection(email) //use email to store collection
-        .document('Cleans').collection('Cleans')
-        .document(_list[0]) //clean name
-        .setData({
-      'title': _list[0],
-      'description': _list[1], //set inner values
-      'StartLat': userLocation.latitude,
-      'StartLon': userLocation.longitude,
-      'StartTime': now
-    });
-  }
-
-  void deleteData() {
-    try {
-      databaseReference
-          .collection('books')
-          .document('1')
-          .delete();
-    } catch (e) {
-      print(e.toString());
-    }
-  }
   void getData(value) {
     databaseReference
 //        .collection("books")
