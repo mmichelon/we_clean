@@ -8,6 +8,8 @@ import 'package:we_clean/cleans_screen.dart';
 import 'package:we_clean/map_screen.dart';
 import 'package:we_clean/login_page.dart';
 import 'package:we_clean/rewards.dart';
+import 'package:we_clean/dirty.dart';
+import 'package:we_clean/new_dirty_screen.dart';
 
 //For images
 import 'dart:io';
@@ -31,7 +33,11 @@ class _MyDrawerState extends State<MyDrawer> {
   var downurl;
 
   Future getImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery,
+
+      maxHeight: 100,
+      maxWidth: 100,
+    );
 
     setState(() {
       profilePic = image;
@@ -81,27 +87,26 @@ class _MyDrawerState extends State<MyDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
+      padding: EdgeInsets.zero,
+      children: <Widget>[
           UserAccountsDrawerHeader(
-//            accountName: Text("Ashish Rawat"),
           accountName:
-                  FutureBuilder( //Used to get points from firebase
-                    // This assumes you have a project on Firebase with a firestore database.
-                    future: Firestore.instance.collection(email).document("Points").get(),
-                      initialData: null,
-                    builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if(snapshot.data == null){
-                        return CircularProgressIndicator();
-                      }
-                      DocumentSnapshot doc = snapshot.data;
-                      return Text("Points: " + doc.data['Points'].toString(),
-                      style: TextStyle(
-                        color: Colors.yellow,
-                        fontSize: 18,
-                      ),
-                    );
-                  }),
+            FutureBuilder( //Used to get points from firebase
+              // This assumes you have a project on Firebase with a firestore database.
+              future: Firestore.instance.collection(email).document("Points").get(),
+                initialData: null,
+              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if(snapshot.data == null){
+                  return CircularProgressIndicator();
+                }
+                DocumentSnapshot doc = snapshot.data;
+                return Text("Points: " + doc.data['Points'].toString(),
+                style: TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 18,
+                ),
+              );
+            }),
             accountEmail: Text(email),
             currentAccountPicture: CircleAvatar(
               backgroundColor:
@@ -125,23 +130,6 @@ class _MyDrawerState extends State<MyDrawer> {
                           fit: BoxFit.cover,
                         ),
                       );
-//                        return Image.network(doc.data['Profile_Pic'],
-//                             width: 100,
-//                            height: 150,
-//                            fit:BoxFit.fill
-//                        );
-//                      return ClipRRect(
-//                        borderRadius: BorderRadius.only(
-//                          topLeft: Radius.circular(8.0),
-//                          topRight: Radius.circular(8.0),
-//                        ),
-//                        child: Image.network(
-//                            doc.data['Profile_Pic'],
-////                              width: 200,
-//                            height: 80,
-//                            fit:BoxFit.fill
-//                        ),
-//                      );
                     }
                 ),
             ),
@@ -160,97 +148,38 @@ class _MyDrawerState extends State<MyDrawer> {
               ),
             ],
           ),
-//          DrawerHeader(
-//            decoration: BoxDecoration(
-//              color: Colors.blue,
-//            ),
-//            child: Container(
-//              child: Column(
-//                children: <Widget>[
-//                  new Text(
-//                    name +
-//                        '\'s profile',
-//                    style: TextStyle(
-//                      color: Colors.white,
-//                      fontSize: 24,
-//                    ),
-//                  ),
-//                  FutureBuilder( //Used to get points from firebase
-//                    // This assumes you have a project on Firebase with a firestore database.
-//                    future: Firestore.instance.collection(email).document("Points").get(),
-//                      initialData: null,
-//                    builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-//                      if(snapshot.data == null){
-//                        return CircularProgressIndicator();
-//                      }
-//                      DocumentSnapshot doc = snapshot.data;
-//                      return Text("Points: " + doc.data['Points'].toString(),
-//                      style: TextStyle(
-//                        color: Colors.yellow,
-//                        fontSize: 18,
-//                      ),
-//                    );
-//                  }),
-//                  FutureBuilder( //Used to get points from firebase
-//                    // This assumes you have a project on Firebase with a firestore database.
-//                      future: Firestore.instance.collection(email).document("Profile_Pic").get(),
-//                      initialData: null,
-//                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-//                        if(snapshot.data == null){
-//                          return CircularProgressIndicator();
-//                        }
-//                        DocumentSnapshot doc = snapshot.data;
-////                        return Image.network(doc.data['Profile_Pic'],
-////                             width: 100,
-////                            height: 150,
-////                            fit:BoxFit.fill);
-//                        return ClipRRect(
-//                            borderRadius: BorderRadius.only(
-//                            topLeft: Radius.circular(8.0),
-//                        topRight: Radius.circular(8.0),
-//                        ),
-//                          child: Image.network(
-//                              doc.data['Profile_Pic'],
-////                              width: 200,
-//                              height: 80,
-//                              fit:BoxFit.fill
-//                          ),
-//                        );
-//                      })
-//                ],
-//              ),
-//            ),
-//          ),
+          ExpansionTile(
+            title: Text('Cleanups',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 20),
+            ),
+            children: <Widget>[
+            ListTile(
+              trailing: Icon(Icons.add),
+              title: Text('      New Cleanup'),
+              onTap: (){
+                print('Go to new cleanup page');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewCleanScreen(name, email)),
+                );
+              },
+            ),
+            ListTile(
+              trailing: Icon(Icons.apps),
+              title: Text('      Cleanups'),
+              onTap: (){
+                print('Go to cleanups page');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CleansScreen(name, email)),
+                );
+              },
+            ),
           ListTile(
-            leading: Icon(Icons.add),
-            title: Text('New Cleanup'),
-            trailing: Icon(Icons.keyboard_arrow_right),
-            onTap: (){
-              print('Go to new cleanup page');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => NewCleanScreen(name, email)),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.apps),
-            title: Text('Cleanups'),
-            trailing: Icon(Icons.keyboard_arrow_right),
-            onTap: (){
-              print('Go to cleanups page');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => CleansScreen(name, email)),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.map),
-            title: Text('MapView'),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: Icon(Icons.map),
+            title: Text('      MapView'),
             onTap: (){
               print('Go to map page');
               Navigator.push(
@@ -260,9 +189,45 @@ class _MyDrawerState extends State<MyDrawer> {
               );
             },
           ),
+            ],
+          ),
+          ExpansionTile(
+            title: Text('Dirty Locations',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 20),
+            ),
+            children: <Widget>[
+              ListTile(
+                trailing: Icon(Icons.add),
+                title: Text('      New Dirty Location'),
+                onTap: (){
+                  print('Go to new New Dirty page');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NewDirtyScreen(name, email)),
+                  );
+                },
+              ),
+              ListTile(
+                trailing: Icon(Icons.error),
+                title: Text('      Dirty Locations'),
+                onTap: (){
+                  print('Go to dirty locations');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DirtyScreen(name, email)),
+                  );
+                },
+              ),
+
+            ],
+          ),
           ListTile(
             leading: Icon(Icons.card_giftcard),
-            title: Text('Rewards'),
+            title: Text('Rewards',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 20),
+            ),
             onTap: (){
               print('Go to map page');
               Navigator.push(
@@ -272,10 +237,11 @@ class _MyDrawerState extends State<MyDrawer> {
               );
             },
           ),
-
           ListTile(
             leading: Icon(Icons.home),
-            title: Text('Sign Out'),
+            title: Text('Sign Out',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 20),
+            ),
             onTap: (){
               signOutGoogle();
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) {return LoginPage();}), ModalRoute.withName('/'));
@@ -284,6 +250,7 @@ class _MyDrawerState extends State<MyDrawer> {
         ],
       ),
     );
+
   }
   Future getDriversList() async {
     return await Firestore.instance.collection(email).getDocuments();

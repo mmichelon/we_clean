@@ -22,7 +22,6 @@ class NextNewCleanScreen extends StatefulWidget {
   final startTime;
   final StartLat;
   final StartLon;
-//  final items = List<String>.generate(50, (i) => "Item $i");
 
   NextNewCleanScreen(this.name, this.email, this._formData, this.startTime, this.StartLat, this.StartLon);
   @override
@@ -40,19 +39,13 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
 
   var _list;
   final databaseReference = Firestore.instance;
-//  QuerySnapshot querySnapshot;
 
-//  final _formKey = GlobalKey<FormState>();
-
-//  final Map<String, dynamic> _formData = {'title': null, 'description': null};
   final focusPassword = FocusNode();
 
   Geolocator geolocator = Geolocator();
   Position userLocation;
 
   //for images
-//  File _image;
-//  String _uploadedFileURL;
   File _image1;
   File _image2;
   File _image3;
@@ -63,9 +56,16 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
   var downurl3;
   var downurl4;
 
+  String dropdownTerrain = 'Easy';
+  String dropdownDensity = 'Sparce';
+
+  final Map<String, dynamic> _dropdownData = {'terrain': null, 'density': null};
 
   Future getImage1() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery,
+        maxWidth: 500,
+        maxHeight: 500,
+    );
 
     setState(() {
       _image1 = image;
@@ -73,7 +73,10 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     });
   }
   Future getImage2() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery,
+      maxWidth: 500,
+      maxHeight: 500,
+    );
 
     setState(() {
       _image2 = image;
@@ -82,7 +85,10 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     });
   }
   Future getImage3() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery,
+      maxWidth: 500,
+      maxHeight: 500,
+    );
 
     setState(() {
       _image3 = image;
@@ -90,7 +96,10 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
     });
   }
   Future getImage4() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery,
+      maxWidth: 500,
+      maxHeight: 500,
+    );
 
     setState(() {
       _image4 = image;
@@ -117,59 +126,196 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
       downurl2 = "";
     }else{
       print("Uploading Pic 2");
-    String fileName2 = basename(_image2.path);
-    StorageReference firebaseStorageRef2 = FirebaseStorage.instance.ref().child(fileName2);
+      String fileName2 = basename(_image2.path);
+      StorageReference firebaseStorageRef2 = FirebaseStorage.instance.ref().child(fileName2);
 
-    StorageUploadTask uploadTask2 = firebaseStorageRef2.putFile(_image2);
-    downurl2 = await (await uploadTask2.onComplete).ref.getDownloadURL();
-    print("downur2");
-    print(downurl2);
+      StorageUploadTask uploadTask2 = firebaseStorageRef2.putFile(_image2);
+      downurl2 = await (await uploadTask2.onComplete).ref.getDownloadURL();
+      print("downur2");
+      print(downurl2);
 
-  }
+    }
     //////////////////////////////
     if(_image3 == null) {
       downurl3 = "";
     }else{
       print("Uploading Pic 3");
-    String fileName3 = basename(_image3.path);
-    StorageReference firebaseStorageRef3 = FirebaseStorage.instance.ref().child(fileName3);
+      String fileName3 = basename(_image3.path);
+      StorageReference firebaseStorageRef3 = FirebaseStorage.instance.ref().child(fileName3);
 
-    StorageUploadTask uploadTask3 = firebaseStorageRef3.putFile(_image3);
-    downurl3 = await (await uploadTask3.onComplete).ref.getDownloadURL();
-    print("downurl3");
-    print(downurl3);
-}
+      StorageUploadTask uploadTask3 = firebaseStorageRef3.putFile(_image3);
+      downurl3 = await (await uploadTask3.onComplete).ref.getDownloadURL();
+      print("downurl3");
+      print(downurl3);
+    }
     //////////////////////////////
     if(_image4 == null) {
       downurl4 = "";
     }else{
       print("Uploading Pic 4");
-    String fileName4 = basename(_image4.path);
-    StorageReference firebaseStorageRef4 = FirebaseStorage.instance.ref().child(fileName4);
+      String fileName4 = basename(_image4.path);
+      StorageReference firebaseStorageRef4 = FirebaseStorage.instance.ref().child(fileName4);
 
-    StorageUploadTask uploadTask4 = firebaseStorageRef4.putFile(_image4);
-    downurl4 = await (await uploadTask4.onComplete).ref.getDownloadURL();
-    print("downurl4");
-    print(downurl4);
-}
-//    StorageTaskSnapshot taskSnapshot=await uploadTask1.onComplete;
-//    setState(() {
-//      print("Profile Picture uploaded");
-////      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
-//    });
+      StorageUploadTask uploadTask4 = firebaseStorageRef4.putFile(_image4);
+      downurl4 = await (await uploadTask4.onComplete).ref.getDownloadURL();
+      print("downurl4");
+      print(downurl4);
+    }
   }
 
   void initState() {
     // TODO: implement initState
     super.initState();
     _list = _formData.values.toList();
-
+    print("_ist");
+    print(_list);
     _getLocation().then((position) {
       userLocation = position;
 
       print("In Next New Cleans init");
-      print(userLocation);
+//      print(userLocation);
+
+      //Init list
+      _dropdownData['terrain'] = dropdownTerrain;
+      _dropdownData['density'] = dropdownDensity;
+
     });
+  }
+
+  Future _endClean() async {
+    //Wait for images to be posted to firebase
+    await uploadPic(_image1, _image2, _image3, _image4);
+
+    await endRecord(_formData);
+  }
+
+  Future endRecord(_results) async {
+    var _list = _results.values.toList();
+
+//    print("List elements");
+//    print(_list[0]);
+//    print(_list[1]);
+
+    print("_dropdownData");
+    print(_dropdownData);
+
+    //Calculate time
+    var now = new DateTime.now();
+//    var difference;
+//    difference = now.difference(startTime);
+
+//    print("difference seconds");
+//    print(difference.inSeconds);
+//    print("difference: ");
+//    print(difference);
+//
+//    print("startTime: ");
+//    print(startTime);
+
+    try {
+      databaseReference
+          .collection(email)
+          .document('Cleans').collection('Cleans')
+          .document(_list[0])
+          .setData({
+        'title': _list[0],
+        'description': _list[1], //set inner values
+        'StartLat': StartLat,
+        'StartLon': StartLon,
+        'StartTime': startTime,
+
+        'EndLat': userLocation.latitude,
+        'EndLon': userLocation.longitude,
+        'EndTime': now,
+
+        'downurl1': downurl1,
+        'downurl2': downurl2,
+        'downurl3': downurl3,
+        'downurl4': downurl4,
+
+        'terrain': _dropdownData['terrain'],
+        'density': _dropdownData['density'],
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+    updateScore();
+  }
+
+  Future updateScore() async{
+    double totalTimeSeconds  = 0 ;
+    double newPoints = 0, basePoints = 0;
+
+    //Getting data from the post insures that it went through
+    try {
+      Firestore.instance.collection(email).document("Cleans")
+          .collection("Cleans").getDocuments().then((val){
+
+        if(val.documents.length > 0){
+          for(var i = 0; i < val.documents.length; i++){
+            if(val.documents[i].data["title"] == _list[0]){
+              print("Found! printing seconds to complete clean");
+              totalTimeSeconds = DateTime.fromMillisecondsSinceEpoch(val.documents[0].data["EndTime"].seconds*1000)
+                  .difference(DateTime.fromMillisecondsSinceEpoch(val.documents[0].data["StartTime"].seconds*1000)).inSeconds.toDouble();
+              // 1 point every 10 minutes
+              print(totalTimeSeconds);
+              basePoints = totalTimeSeconds / 600;
+              break;
+            }
+          }
+        }
+        else{
+          print("Not Found!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+      });
+      // Add first multiplier
+        if(_dropdownData['terrain'] == 'Moderate(incline/shrubs)'){
+          newPoints += basePoints * 0.25;
+        }else if(_dropdownData['terrain'] == 'Difficult/Nasty') {
+          newPoints += basePoints * 0.5;
+        } else if(_dropdownData['terrain'] == 'Easy') {
+          //Do nothing
+        }else{
+          print("ERROR: score dropdown");
+        }
+        databaseReference
+            .collection(email)
+            .document('Cleans').collection('Cleans')
+            .document(_list[0]).updateData({
+              'Points': (basePoints),
+        });
+
+        //Add second score multiplier
+        if(_dropdownData['density'] == 'Moderate'){
+          newPoints += basePoints * 0.25;
+        }else if(_dropdownData['density'] == 'Dense') {
+          newPoints += basePoints * 0.5;
+        } else if(_dropdownData['density'] == 'Sparce') {
+          //Do nothing
+        }else{
+          print("ERROR: score dropdown");
+        }
+        print("basePoints");
+        print(basePoints);
+        print("newPoints:");
+        print(newPoints);
+
+
+
+    }catch(e){
+      print("ERROR: Catch");
+    }
+  }
+
+  Future<Position> _getLocation() async {
+    var currentLocation;
+    try {
+      currentLocation = await geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.best);
+    } catch (e) {
+      currentLocation = null;
+    }
+    return currentLocation;
   }
 
   MyNextNewCleanScreenState(this.name, this.email, this._formData, this.startTime, this.StartLat, this.StartLon);
@@ -187,72 +333,147 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
         primary: false,
         slivers: <Widget>[
           SliverPadding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(15),
             sliver: SliverGrid.count(
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               crossAxisCount: 2,
               children: <Widget>[
                 Container(
-                  padding: const EdgeInsets.all(8),
-                  child: _image1 == null
-//                    ? Text('No image selected.')
-                    ? RaisedButton(
-                    onPressed: getImage1,
-                    child: const Text(
-                        'Image of area before 1',
-                        style: TextStyle(fontSize: 20)
+                  alignment: Alignment(0.0, -0.5),
+                  child: Column(
+                    children: <Widget>[
+                  Text("Terrain: "),
+                  DropdownButton<String>(
+                    value: dropdownTerrain,
+                    icon: Icon(Icons.arrow_drop_down),
+            //        iconSize: 24,
+            //        elevation: 16,
+                    style: TextStyle(
+                        color: Colors.deepPurple
                     ),
-                  )
-                  : Image.file(_image1, height: 200, width: 200),
-//                    color: Colors.green[100],
+                    underline: Container(
+                      height: 2,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        dropdownTerrain = newValue;
+                        _dropdownData['terrain'] = newValue;
+                      });
+                    },
+                      items: <String>['Easy', 'Moderate(incline/shrubs)', 'Difficult/Nasty']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  ],
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: _image2 == null
-                      ? RaisedButton(
-                    onPressed: getImage2,
-                    child: const Text(
-                        'Image of area before 2',
-                        style: TextStyle(fontSize: 20)
-                    ),
-                  )
-                      : Image.file(_image2, height: 200, width: 200),
+                  alignment: Alignment(0.0, -0.5),
+                  child: Column(
+                    children: <Widget>[
+                      Text("Trash Density:"),
+                      DropdownButton<String>(
+                        value: dropdownDensity,
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: TextStyle(
+                            color: Colors.deepPurple
+                        ),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.deepPurpleAccent,
+                        ),
+                        onChanged: (String newValue1) {
+                          setState(() {
+                            dropdownDensity = newValue1;
+                            _dropdownData['density'] = newValue1;
+                          });
+                        },
+                        items: <String>['Sparce', 'Moderate', 'Dense']
+                            .map<DropdownMenuItem<String>>((String value1) {
+                          return DropdownMenuItem<String>(
+                            value: value1,
+                            child: Text(value1),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  child: _image3 == null
-                      ? RaisedButton(
-                    onPressed: getImage3,
-                    child: const Text(
-                        'Image of area after 3',
-                        style: TextStyle(fontSize: 20)
-                    ),
-                  )
-                      : Image.file(_image3, height: 200, width: 200),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  child: _image4 == null
-                      ? RaisedButton(
-                    onPressed: getImage4,
-                    child: const Text(
-                        'Image of area after 4',
-                        style: TextStyle(fontSize: 20)
-                    ),
-                  )
-                      : Image.file(_image4, height: 200, width: 200),
-                ),
+
               ],
             ),
           ),
+    SliverPadding(
+      padding: const EdgeInsets.all(15),
+      sliver: SliverGrid.count(
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
+      crossAxisCount: 1,
+      children: <Widget>[
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: _image1 == null
+  //                    ? Text('No image selected.')
+                  ? RaisedButton(
+                onPressed: getImage1,
+                child: const Text(
+                    'Image of area before 1',
+                    style: TextStyle(fontSize: 20)
+                ),
+              )
+                  : Image.file(_image1, height: 200, width: 200),
+  //                    color: Colors.green[100],
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: _image2 == null
+                  ? RaisedButton(
+                onPressed: getImage2,
+                child: const Text(
+                    'Image of area before 2',
+                    style: TextStyle(fontSize: 20)
+                ),
+              )
+                  : Image.file(_image2, height: 200, width: 200),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: _image3 == null
+                  ? RaisedButton(
+                onPressed: getImage3,
+                child: const Text(
+                    'Image of area after 3',
+                    style: TextStyle(fontSize: 20)
+                ),
+              )
+                  : Image.file(_image3, height: 200, width: 200),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: _image4 == null
+                  ? RaisedButton(
+                onPressed: getImage4,
+                child: const Text(
+                    'Image of area after 4',
+                    style: TextStyle(fontSize: 20)
+                ),
+              )
+                  : Image.file(_image4, height: 200, width: 200),
+            ),
+          ],
+        ),
+      ),
         ],
       ),
-//        child: _image == null
-//            ? Text('No image selected.')
-//            : Image.file(_image, height: 200, width: 200),
-//      ),
-
         floatingActionButton: Stack(
           children: <Widget>[
             Align(
@@ -276,125 +497,9 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
                 },
                 child: Icon(Icons.check_circle),),
             ),
-
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: FloatingActionButton(
-                heroTag: "btn3",
-                onPressed: () {
-                  uploadPic(_image1, _image2, _image3, _image4);
-                  print("Download URLS");
-                  print(downurl1);
-                  print(downurl2);
-                  print(downurl3);
-                  print(downurl4);
-                },
-                child: Icon(Icons.cake),),
-            ),
-
           ],
         ),
-
-//      body: _buildSubmitButton(),
       drawer: MyDrawer(),
     );
-  }
-
-//  void _endClean() {
-  Future _endClean() async {
-    //Wait for images to be posted to firebase
-    await uploadPic(_image1, _image2, _image3, _image4);
-
-    print("Before wait");
-    print("After wait");
-    await endRecord(_formData);
-  }
-
-  Future endRecord(_results) async {
-    var _list = _results.values.toList();
-
-    print(_list[0]);
-    print(_list[1]);
-    print(userLocation.latitude);
-    print(userLocation.longitude);
-
-    print("Download URLS");
-    print(downurl1);
-    print(downurl2);
-    print(downurl3);
-    print(downurl4);
-    //Calculate time
-    var now = new DateTime.now();
-    var difference;
-
-    difference = now.difference(startTime);
-
-    print("difference seconds");
-    print(difference.inSeconds);
-    print("difference: ");
-    print(difference);
-
-    print("startTime: ");
-    print(startTime);
-
-    try {
-      databaseReference
-          .collection(email)
-          .document('Cleans').collection('Cleans')
-          .document(_list[0])
-          .setData({
-        'title': _list[0],
-        'description': _list[1], //set inner values
-        'StartLat': StartLat,
-        'StartLon': StartLon,
-        'StartTime': startTime,
-
-        'EndLat': userLocation.latitude,
-        'EndLon': userLocation.longitude,
-        'EndTime': now,
-
-        'downurl1': downurl1,
-        'downurl2': downurl2,
-        'downurl3': downurl3,
-        'downurl4': downurl4
-//        'Difference' : difference
-      });
-    } catch (e) {
-      print(e.toString());
-    }
-    updateScore();
-  }
-  void updateScore() async{
-    try {
-      QuerySnapshot querySnapshot = await Firestore.instance.collection(email).
-      document("Cleans").collection("Cleans").getDocuments();
-      print("list Length");
-      print(querySnapshot.documents.length);
-
-      if(querySnapshot.documents.length <= 0){
-        //Set new value for points
-        databaseReference.collection(email).document('Points').setData({
-          'Points': 0,
-        });
-      }else {
-        print("Points exists");
-        databaseReference.collection(email).document('Points').setData({
-          'Points': (querySnapshot.documents.length * 10),
-        });
-      }
-    }catch(e){
-      print("Error");
-    }
-  }
-
-  Future<Position> _getLocation() async {
-    var currentLocation;
-    try {
-      currentLocation = await geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best);
-    } catch (e) {
-      currentLocation = null;
-    }
-    return currentLocation;
   }
 }

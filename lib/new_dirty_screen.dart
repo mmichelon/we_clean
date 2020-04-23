@@ -8,36 +8,85 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 
 import 'package:we_clean/next_new_cleans_screen.dart';
 
-class NewCleanScreen extends StatefulWidget {
+//For images
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart'; // For File Upload To Firestore
+import 'package:path/path.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:async';
+
+class NewDirtyScreen extends StatefulWidget {
   final name;
   final email;
 
 //  final items = List<String>.generate(50, (i) => "Item $i");
 
-  NewCleanScreen(this.name, this.email);
+  NewDirtyScreen(this.name, this.email);
   @override
-  State<NewCleanScreen> createState() => MyNewCleanScreenState(name, email);
+  State<NewDirtyScreen> createState() => MyNewDirtyScreenState(name, email);
 }
 
-class MyNewCleanScreenState extends State<NewCleanScreen> {
+class MyNewDirtyScreenState extends State<NewDirtyScreen> {
   final name;
   final email;
 
   final databaseReference = Firestore.instance;
-
-  Geoflutterfire geo;
-  TextEditingController _latitudeController, _longitudeController;
-  Stream<List<DocumentSnapshot>> stream;
+  QuerySnapshot querySnapshot;
 
   final _formKey = GlobalKey<FormState>();
-
   final Map<String, dynamic> _formData = {'title': null, 'description': null};
   final focusPassword = FocusNode();
 
-  var startTime;
-
   Geolocator geolocator = Geolocator();
   Position userLocation;
+
+  var startLat;
+  var startLon;
+  var downurl;
+
+  File dirtyPic;
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery,
+      maxHeight: 500,
+      maxWidth: 500,
+    );
+
+    setState(() {
+      dirtyPic = image;
+      print('Image Path $dirtyPic');
+    });
+    await uploadPic(image,downurl);
+  }
+
+  Future uploadPic(_image,downurl) async {
+    //Upload the picture to firestore and genereate url
+    if (_image == null) {
+      downurl = "";
+    } else {
+      print("Uploading profile pic");
+      String fileName1 = basename(_image.path);
+      StorageReference firebaseStorageRef1 = FirebaseStorage.instance.ref()
+          .child(fileName1);
+
+      StorageUploadTask uploadTask1 = firebaseStorageRef1.putFile(_image);
+      downurl = await (await uploadTask1.onComplete).ref.getDownloadURL();
+      print("downurl");
+      print(downurl);
+    }
+    //add it to their database entry
+    try {
+      databaseReference
+          .collection(email)
+          .document('Profile_Pic')
+          .setData({
+        'Profile_Pic': downurl,
+//        'Difference' : difference
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   void initState() {
     // TODO: implement initState
@@ -50,7 +99,7 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
     });
   }
 
-  MyNewCleanScreenState(this.name, this.email);
+  MyNewDirtyScreenState(this.name, this.email);
 
   @override
   Widget build(BuildContext context) {
@@ -66,19 +115,28 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
   Widget _buildForm() {
     return Form(
         key: _formKey,
-//        Padding(
-//        padding: const EdgeInsets.all(15),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-//          Padding(
-//            padding: const EdgeInsets.all(15),
           children: <Widget>[
             _buildEmailField(),
             _buildPasswordField(),
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: dirtyPic == null
+              //                    ? Text('No image selected.')
+                  ? RaisedButton(
+                onPressed: getImage,
+                child: const Text(
+                    'Image of area before 1',
+                    style: TextStyle(fontSize: 20)
+                ),
+              )
+                  : Image.file(dirtyPic, height: 400, width: 400),
+              //                    color: Colors.green[100],
+            ),
             _buildSubmitButton(),
           ],
         )
-//      ),
     );
   }
 
@@ -95,16 +153,13 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
       },
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (v) {
-        FocusScope.of(context).requestFocus(focusPassword);
+        FocusScope.of(this.context).requestFocus(focusPassword);
       },
     );
   }
 
   Widget _buildPasswordField() {
     return TextFormField(
-      keyboardType: TextInputType.multiline,
-      minLines: 1,//Normal textInputField will be displayed
-      maxLines: 5,// when user presses enter it will adapt to it
       decoration: InputDecoration(labelText: 'Description'),
       validator: (String value) {
         if (value.isEmpty) {
@@ -138,11 +193,33 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
 
       print(_formData);
       Navigator.push(
-        context,
+        this.context,
         MaterialPageRoute(
             builder: (context) => NextNewCleanScreen(name, email, _formData, new DateTime.now(), userLocation.latitude, userLocation.longitude)),
       );
     }
+  }
+
+  Future endRecord(_results) async {
+    var _list = _results.values.toList();
+
+    try {
+      databaseReference
+          .collection(email)
+          .document('Cleans').collection('Cleans')
+          .document(_list[0])
+          .setData({
+        'title': _list[0],
+        'description': _list[1], //set inner values
+        'tartLat': startLat,
+        'startLon': startLon,
+        'downurl': downurl,
+
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+//    updateScore();
   }
 
   Future<Position> _getLocation() async {

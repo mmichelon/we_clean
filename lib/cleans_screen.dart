@@ -62,6 +62,8 @@ class MyCleanScreenState extends State<CleansScreen> {
                               downurl2: document['downurl2'],
                               downurl3: document['downurl3'],
                               downurl4: document['downurl4'],
+                              terrain: document['terrain'],
+                              density: document['density'],
                             );
 
                         }).toList(),
@@ -77,7 +79,7 @@ class MyCleanScreenState extends State<CleansScreen> {
 
 class CustomCard extends StatelessWidget {
   CustomCard({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.EndLat, this.EndLon,
-    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4});
+    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4, this.terrain, this.density});
   final name;
   final email;
 
@@ -97,6 +99,8 @@ class CustomCard extends StatelessWidget {
   final downurl3;
   final downurl4;
 
+  final terrain;
+  final density;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -126,6 +130,8 @@ class CustomCard extends StatelessWidget {
                                   downurl2: downurl2,
                                   downurl3: downurl3,
                                   downurl4: downurl4,
+                                  terrain: terrain,
+                                  density: density,
                               )));
                     }),
               ],
@@ -135,7 +141,7 @@ class CustomCard extends StatelessWidget {
 
 class SecondPage extends StatelessWidget {
   SecondPage({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.EndLat, this.EndLon,
-    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4});
+    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4, this.terrain, this.density});
   final name;
   final email;
 
@@ -154,6 +160,9 @@ class SecondPage extends StatelessWidget {
   final downurl2;
   final downurl3;
   final downurl4;
+
+  final terrain;
+  final density;
 
   final databaseReference = Firestore.instance;
 
@@ -177,6 +186,9 @@ class SecondPage extends StatelessWidget {
                 child: Column(children: <Widget>[
                   Text("Description: "),
                   Text(description.toString() + "\n"),
+                  Text(terrain.toString() + "\n"),
+                  Text(density.toString() + "\n"),
+
                 ],
               ),
               ),
@@ -209,6 +221,18 @@ class SecondPage extends StatelessWidget {
                   ],
                 )
               ),
+
+              ],
+            ),
+          ),
+
+          SliverPadding(
+          padding: const EdgeInsets.all(20),
+          sliver: SliverGrid.count(
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          crossAxisCount: 1,
+          children: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(8),
                   child: downurl1 == ""
@@ -238,11 +262,17 @@ class SecondPage extends StatelessWidget {
           ),
         ],
       ),
+
+
       floatingActionButton: Stack(
         children: <Widget>[
+
           Align(
 //            padding: EdgeInsets.all(10.0),
             alignment: Alignment.bottomLeft,
+
+            child: Container(
+            padding: const EdgeInsets.only(left: 30.0),
             child: FloatingActionButton(
               heroTag: "btn1",
               onPressed: () {
@@ -255,6 +285,7 @@ class SecondPage extends StatelessWidget {
                 );
               },
               child: Icon(Icons.delete),
+            ),
             ),
           ),
           Align(
