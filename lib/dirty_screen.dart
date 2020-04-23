@@ -47,7 +47,8 @@ class MyDirtyScreenState extends State<DirtyScreen> {
                           name: name,
                           email: email,
                           title: document['title'].toString(),
-                          image: document['image'],
+                          description: document['description'].toString(),
+                          downurl: document['downurl'].toString(),
                         );
                       }).toList(),
                     );
@@ -61,13 +62,13 @@ class MyDirtyScreenState extends State<DirtyScreen> {
 }
 
 class CustomCard extends StatelessWidget {
-  CustomCard({@required this.name, this.email, this.title, this.description, this.image});
+  CustomCard({@required this.name, this.email, this.title, this.description, this.downurl});
   final name;
   final email;
 
   final title;
   final description;
-  final image;
+  final downurl;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +94,7 @@ class CustomCard extends StatelessWidget {
                                 email: email,
                                 title: title,
                                 description: description,
-                                image: image,
+                                downurl: downurl,
                               )
                           )
                       );
@@ -106,13 +107,13 @@ class CustomCard extends StatelessWidget {
 }
 
 class SecondPage extends StatelessWidget {
-  SecondPage({@required this.name, this.email, this.title, this.description, this.image});
+  SecondPage({@required this.name, this.email, this.title, this.description, this.downurl});
   final name;
   final email;
 
   final title;
   final description;
-  final image;
+  final downurl;
 
   final databaseReference = Firestore.instance;
 
@@ -126,11 +127,20 @@ class SecondPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text("Points: ",
+          Text("Name requests your help!",
             style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),
           ),
-//          Text(points.toString() + "\n",
-//            style: TextStyle(fontSize: 30),
+          Text(""), //Spacer
+          Text(description.toString()),
+
+          downurl == ""
+              ? Text("No image")
+              : Image.network(downurl, fit:BoxFit.fill),
+//          Image.network(
+//            downurl,
+//            width: 400,
+//            height: 400,
+//            fit: BoxFit.cover,
 //          ),
         ],
       ),
@@ -153,28 +163,5 @@ class SecondPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void updateScore() async{
-    try {
-      QuerySnapshot querySnapshot = await Firestore.instance.collection(email).
-      document("Cleans").collection("Cleans").getDocuments();
-      print("list Length");
-      print(querySnapshot.documents.length);
-
-      if(querySnapshot.documents.length <= 0){
-        //Set new value for points
-        databaseReference.collection(email).document('points').setData({
-          'points': 0,
-        });
-      }else {
-        print("points exists");
-        databaseReference.collection(email).document('points').setData({
-          'points': (querySnapshot.documents.length * 10),
-        });
-      }
-    }catch(e){
-      print("Error");
-    }
   }
 }

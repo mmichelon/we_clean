@@ -8,7 +8,7 @@ import 'package:we_clean/cleans_screen.dart';
 import 'package:we_clean/map_screen.dart';
 import 'package:we_clean/login_page.dart';
 import 'package:we_clean/rewards.dart';
-import 'package:we_clean/dirty.dart';
+import 'package:we_clean/dirty_screen.dart';
 import 'package:we_clean/new_dirty_screen.dart';
 
 //For images

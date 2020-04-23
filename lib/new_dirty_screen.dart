@@ -6,7 +6,7 @@ import 'package:we_clean/drawer.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 
-import 'package:we_clean/next_new_cleans_screen.dart';
+import 'package:we_clean/dirty_screen.dart';
 
 //For images
 import 'dart:io';
@@ -56,10 +56,10 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
       dirtyPic = image;
       print('Image Path $dirtyPic');
     });
-    await uploadPic(image,downurl);
+    await uploadPic(dirtyPic);
   }
 
-  Future uploadPic(_image,downurl) async {
+  Future uploadPic(_image) async {
     //Upload the picture to firestore and genereate url
     if (_image == null) {
       downurl = "";
@@ -94,7 +94,7 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
     _getLocation().then((position) {
       userLocation = position;
 
-      print("In New Cleans init");
+      print("In Dirty init");
       print(userLocation);
     });
   }
@@ -182,7 +182,7 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
       onPressed: () {
         _submitForm();
       },
-      child: Text('Start new Clean'),
+      child: Text('Post Dirty Location'),
     );
   }
 
@@ -192,30 +192,42 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
       print("_formData");
 
       print(_formData);
+
+      _endDirty();
       Navigator.push(
         this.context,
         MaterialPageRoute(
-            builder: (context) => NextNewCleanScreen(name, email, _formData, new DateTime.now(), userLocation.latitude, userLocation.longitude)),
+            builder: (context) => DirtyScreen(name, email)),
       );
     }
   }
 
-  Future endRecord(_results) async {
+  Future _endDirty() async {
+    //Wait for images to be posted to firebase
+//    await uploadPic(dirtyPic,downurl);
+
+    await _endRecord(_formData,downurl);
+  }
+
+  Future _endRecord(_results, downurl) async {
     var _list = _results.values.toList();
+
+    print("downurl");
+    print(downurl);
 
     try {
       databaseReference
-          .collection(email)
-          .document('Cleans').collection('Cleans')
+          .collection('Dirty')
           .document(_list[0])
           .setData({
-        'title': _list[0],
-        'description': _list[1], //set inner values
-        'tartLat': startLat,
-        'startLon': startLon,
-        'downurl': downurl,
-
-      });
+            'title': _list[0],
+            'description': _list[1], //set inner values
+            'startLat': userLocation.latitude,
+            'startLon': userLocation.longitude,
+            'downurl': downurl,
+            'poster': name,
+            'posterEmail': email,
+          });
     } catch (e) {
       print(e.toString());
     }
