@@ -56,7 +56,7 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
       dirtyPic = image;
       print('Image Path $dirtyPic');
     });
-    await uploadPic(dirtyPic);
+//    await uploadPic(dirtyPic);
   }
 
   Future uploadPic(_image) async {
@@ -64,7 +64,7 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
     if (_image == null) {
       downurl = "";
     } else {
-      print("Uploading profile pic");
+      print("Uploading dirty pic");
       String fileName1 = basename(_image.path);
       StorageReference firebaseStorageRef1 = FirebaseStorage.instance.ref()
           .child(fileName1);
@@ -74,18 +74,17 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
       print("downurl");
       print(downurl);
     }
-    //add it to their database entry
-    try {
-      databaseReference
-          .collection(email)
-          .document('Profile_Pic')
-          .setData({
-        'Profile_Pic': downurl,
-//        'Difference' : difference
-      });
-    } catch (e) {
-      print(e.toString());
-    }
+    //add the image to the dirty post
+//    try {
+//      databaseReference
+//        .collection('Dirty')
+//        .document(_formData[0])
+//        .setData({
+//          'downurl': downurl,
+//        });
+//    } catch (e) {
+//      print(e.toString());
+//    }
   }
 
   void initState() {
@@ -103,10 +102,10 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("In New Cleans main widget");
+    print("In New dirty main widget");
     return Scaffold(
       appBar: AppBar(
-        title: Text(name + 's Cleans'),
+        title: Text(name + 's New Dirty Post'),
       ),
       body: _buildForm(),
       drawer: MyDrawer(),
@@ -204,9 +203,9 @@ class MyNewDirtyScreenState extends State<NewDirtyScreen> {
 
   Future _endDirty() async {
     //Wait for images to be posted to firebase
-//    await uploadPic(dirtyPic,downurl);
+    await uploadPic(dirtyPic);
 
-    await _endRecord(_formData,downurl);
+    await _endRecord(_formData, downurl);
   }
 
   Future _endRecord(_results, downurl) async {

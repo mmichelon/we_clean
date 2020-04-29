@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:we_clean/drawer.dart';
 
+import 'package:we_clean/map_dirty_screen.dart';
+
 class DirtyScreen extends StatefulWidget {
   final name;
   final email;
@@ -46,6 +48,8 @@ class MyDirtyScreenState extends State<DirtyScreen> {
                         return new CustomCard(
                           name: name,
                           email: email,
+                          StartLat: document['startLat'],
+                          StartLon: document['startLon'],
                           title: document['title'].toString(),
                           description: document['description'].toString(),
                           downurl: document['downurl'].toString(),
@@ -62,10 +66,11 @@ class MyDirtyScreenState extends State<DirtyScreen> {
 }
 
 class CustomCard extends StatelessWidget {
-  CustomCard({@required this.name, this.email, this.title, this.description, this.downurl});
+  CustomCard({@required this.name, this.email, this.StartLat, this.StartLon, this.title, this.description, this.downurl});
   final name;
   final email;
-
+  final StartLat;
+  final StartLon;
   final title;
   final description;
   final downurl;
@@ -86,6 +91,11 @@ class CustomCard extends StatelessWidget {
                 FlatButton(
                     child: Text("See More"),
                     onPressed: () {
+
+                      print("StartLat and StartLon");
+                      print(StartLat);
+                      print(StartLon);
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -93,11 +103,14 @@ class CustomCard extends StatelessWidget {
                                 name: name,
                                 email: email,
                                 title: title,
+                                StartLat: StartLat,
+                                StartLon: StartLon,
                                 description: description,
                                 downurl: downurl,
                               )
                           )
                       );
+
                     }),
               ],
             )
@@ -107,12 +120,14 @@ class CustomCard extends StatelessWidget {
 }
 
 class SecondPage extends StatelessWidget {
-  SecondPage({@required this.name, this.email, this.title, this.description, this.downurl});
+  SecondPage({@required this.name, this.email, this.title, this.StartLat, this.StartLon, this.description, this.downurl});
   final name;
   final email;
-
+  final StartLat;
+  final StartLon;
   final title;
   final description;
+
   final downurl;
 
   final databaseReference = Firestore.instance;
@@ -127,15 +142,20 @@ class SecondPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text("Name requests your help!",
-            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),
+          Text(name + " requests your help!",
+            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
           ),
           Text(""), //Spacer
-          Text(description.toString()),
+          Text(description.toString(),
+            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),
+          ),
+          Container(
+            padding: const EdgeInsets.only(left: 15),
+            child: downurl == ""
+                ? Text("No image")
+                : Image.network(downurl, fit:BoxFit.fill),
+          ),
 
-          downurl == ""
-              ? Text("No image")
-              : Image.network(downurl, fit:BoxFit.fill),
 //          Image.network(
 //            downurl,
 //            width: 400,
@@ -144,7 +164,6 @@ class SecondPage extends StatelessWidget {
 //          ),
         ],
       ),
-
       floatingActionButton: Stack(
         children: <Widget>[
           Align(
@@ -155,7 +174,9 @@ class SecondPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => DirtyScreen(name,email)),
+                      builder: (context) => MapDirtyScreen(name, email, StartLat, StartLon, title, description)),
+
+//                      builder: (context) => map(name,email)),
                 );
               },
               child: Icon(Icons.map),),

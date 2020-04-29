@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:we_clean/drawer.dart';
-
 import 'package:geolocator/geolocator.dart';
-
 import 'package:we_clean/cleans_screen.dart';
 
 //For images
@@ -243,23 +240,26 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
   }
 
   Future updateScore() async{
+    print("Update Score");
     double totalTimeSeconds  = 0 ;
     double newPoints = 0, basePoints = 0;
 
     //Getting data from the post insures that it went through
     try {
-      Firestore.instance.collection(email).document("Cleans")
+      await Firestore.instance.collection(email).document("Cleans")
           .collection("Cleans").getDocuments().then((val){
 
         if(val.documents.length > 0){
           for(var i = 0; i < val.documents.length; i++){
             if(val.documents[i].data["title"] == _list[0]){
               print("Found! printing seconds to complete clean");
-              totalTimeSeconds = DateTime.fromMillisecondsSinceEpoch(val.documents[0].data["EndTime"].seconds*1000)
-                  .difference(DateTime.fromMillisecondsSinceEpoch(val.documents[0].data["StartTime"].seconds*1000)).inSeconds.toDouble();
-              // 1 point every 10 minutes
+              print(DateTime.fromMillisecondsSinceEpoch(val.documents[i].data["EndTime"].seconds*1000));
+              print(DateTime.fromMillisecondsSinceEpoch(val.documents[i].data["StartTime"].seconds*1000));
+              totalTimeSeconds = DateTime.fromMillisecondsSinceEpoch(val.documents[i].data["EndTime"].seconds*1000)
+                  .difference(DateTime.fromMillisecondsSinceEpoch(val.documents[i].data["StartTime"].seconds*1000)).inSeconds.toDouble();
+              // 1 point every 5 minutes
               print(totalTimeSeconds);
-              basePoints = totalTimeSeconds / 600;
+              basePoints = totalTimeSeconds / 300;
               break;
             }
           }
@@ -278,12 +278,6 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
         }else{
           print("ERROR: score dropdown");
         }
-        databaseReference
-            .collection(email)
-            .document('Cleans').collection('Cleans')
-            .document(_list[0]).updateData({
-              'Points': (basePoints),
-        });
 
         //Add second score multiplier
         if(_dropdownData['density'] == 'Moderate'){
@@ -300,8 +294,12 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
         print("newPoints:");
         print(newPoints);
 
-
-
+        databaseReference
+            .collection(email)
+            .document('Cleans').collection('Cleans')
+            .document(_list[0]).updateData({
+          'Points': (basePoints + newPoints),
+        });
     }catch(e){
       print("ERROR: Catch");
     }

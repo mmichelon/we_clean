@@ -64,6 +64,7 @@ class MyCleanScreenState extends State<CleansScreen> {
                               downurl4: document['downurl4'],
                               terrain: document['terrain'],
                               density: document['density'],
+                              Points: document['Points'],
                             );
 
                         }).toList(),
@@ -79,7 +80,7 @@ class MyCleanScreenState extends State<CleansScreen> {
 
 class CustomCard extends StatelessWidget {
   CustomCard({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.EndLat, this.EndLon,
-    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4, this.terrain, this.density});
+    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4, this.terrain, this.density,this.Points});
   final name;
   final email;
 
@@ -101,6 +102,7 @@ class CustomCard extends StatelessWidget {
 
   final terrain;
   final density;
+  final Points;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -132,6 +134,7 @@ class CustomCard extends StatelessWidget {
                                   downurl4: downurl4,
                                   terrain: terrain,
                                   density: density,
+                                  Points: Points,
                               )));
                     }),
               ],
@@ -141,7 +144,7 @@ class CustomCard extends StatelessWidget {
 
 class SecondPage extends StatelessWidget {
   SecondPage({@required this.name, this.email, this.title, this.description, this.StartLat, this.StartLon, this.EndLat, this.EndLon,
-    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4, this.terrain, this.density});
+    this.StartTime, this.EndTime, this.downurl1, this.downurl2, this.downurl3, this.downurl4, this.terrain, this.density, this.Points});
   final name;
   final email;
 
@@ -163,6 +166,7 @@ class SecondPage extends StatelessWidget {
 
   final terrain;
   final density;
+  final Points;
 
   final databaseReference = Firestore.instance;
 
@@ -186,9 +190,8 @@ class SecondPage extends StatelessWidget {
                 child: Column(children: <Widget>[
                   Text("Description: "),
                   Text(description.toString() + "\n"),
-                  Text(terrain.toString() + "\n"),
-                  Text(density.toString() + "\n"),
-
+                  Text("Terrain: \n" + terrain.toString() + "\n"),
+                  Text("Density: \n" + density.toString() + "\n"),
                 ],
               ),
               ),
@@ -218,7 +221,10 @@ class SecondPage extends StatelessWidget {
                     .inSeconds % 60)
                     .toString() +
                     " Seconds"),
-                  ],
+
+                Text("\n Points \n" + Points.toStringAsFixed(5) + "\n"),
+
+                ],
                 )
               ),
 
@@ -266,7 +272,6 @@ class SecondPage extends StatelessWidget {
 
       floatingActionButton: Stack(
         children: <Widget>[
-
           Align(
 //            padding: EdgeInsets.all(10.0),
             alignment: Alignment.bottomLeft,
@@ -277,7 +282,7 @@ class SecondPage extends StatelessWidget {
               heroTag: "btn1",
               onPressed: () {
                 deleteClean(title);
-                updateScore();
+//                updateScore();
                 Navigator.push(
                   context,
                   MaterialPageRoute(

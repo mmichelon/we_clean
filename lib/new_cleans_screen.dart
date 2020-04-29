@@ -57,7 +57,7 @@ class MyNewCleanScreenState extends State<NewCleanScreen> {
     print("In New Cleans main widget");
     return Scaffold(
       appBar: AppBar(
-        title: Text(name + 's Cleans'),
+        title: Text("Begin new Clean"),
       ),
       body: _buildForm(),
       drawer: MyDrawer(),

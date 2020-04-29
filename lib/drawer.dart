@@ -31,6 +31,7 @@ class _MyDrawerState extends State<MyDrawer> {
 
   File profilePic;
   var downurl;
+  double total;
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery,
@@ -74,6 +75,36 @@ class _MyDrawerState extends State<MyDrawer> {
     }
   }
 
+  // Totals the points from each of the users individual cleans
+//  void queryValues() {
+//    Firestore.instance
+//        .collection(email)
+//        .document('Cleans').collection('Cleans')
+//        .snapshots()
+//        .listen((snapshot) {
+//      double tempTotal = snapshot.documents.fold(
+//          0, (tot, doc) => tot + doc.data['Points']);
+//      setState(() {
+//        total = tempTotal;
+//      });
+//      debugPrint("total.toString()");
+//
+//      debugPrint(total.toString());
+//    });
+//  }
+
+  void queryValues() {
+    Firestore.instance
+        .collection(email)
+        .document('Cleans').collection('Cleans')
+        .snapshots()
+        .listen((snapshot) {
+      double tempTotal = snapshot.documents.fold(0, (tot, doc) => tot + doc.data['Points']);
+      setState(() {total = tempTotal;});
+      debugPrint(total.toString());
+    });
+  }
+
   void initState() {
     super.initState();
     getDriversList().then((results) {
@@ -81,6 +112,7 @@ class _MyDrawerState extends State<MyDrawer> {
         querySnapshot = results;
       });
     });
+    queryValues();
   }
 
   @override
@@ -91,22 +123,13 @@ class _MyDrawerState extends State<MyDrawer> {
       children: <Widget>[
           UserAccountsDrawerHeader(
           accountName:
-            FutureBuilder( //Used to get points from firebase
-              // This assumes you have a project on Firebase with a firestore database.
-              future: Firestore.instance.collection(email).document("Points").get(),
-                initialData: null,
-              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if(snapshot.data == null){
-                  return CircularProgressIndicator();
-                }
-                DocumentSnapshot doc = snapshot.data;
-                return Text("Points: " + doc.data['Points'].toString(),
-                style: TextStyle(
-                  color: Colors.yellow,
-                  fontSize: 18,
-                ),
-              );
-            }),
+            Text(
+              "Points: " + total.toStringAsFixed(5),
+              style: TextStyle(
+                color: Colors.yellow,
+                fontSize: 18,
+              ),
+            ),
             accountEmail: Text(email),
             currentAccountPicture: CircleAvatar(
               backgroundColor:
