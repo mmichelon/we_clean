@@ -5,9 +5,6 @@ import 'package:we_clean/sign_in.dart';
 import 'package:we_clean/map_screen.dart';
 import 'package:we_clean/cleans_screen.dart';
 
-
-
-
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();

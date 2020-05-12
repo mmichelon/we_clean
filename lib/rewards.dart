@@ -16,9 +16,15 @@ class MyRewardsScreenState extends State<RewardsScreen> {
   final email;
 
   final databaseReference = Firestore.instance;
+  double total;
 
   MyRewardsScreenState(this.name, this.email);
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    queryValues();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,8 +36,7 @@ class MyRewardsScreenState extends State<RewardsScreen> {
         child: Container(
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('Rewards')
-                  .snapshots(),
+              stream: Firestore.instance.collection(email).document('myRewards').collection('myRewards').snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError)
@@ -43,12 +48,24 @@ class MyRewardsScreenState extends State<RewardsScreen> {
                     return new ListView(
                       children: snapshot.data.documents
                           .map((DocumentSnapshot document){
-                        return new CustomCard(
-                          name: name,
-                          email: email,
-                          title: document['title'].toString(),
-                          points: document['points'],
-                        );
+                        //need to change to check if it has been redeamed or not
+                        //Return different custom card if so
+                        print(document['redeemed']);
+                        if(document['redeemed'] == 0){
+                              return new CustomCard(
+                                name: name,
+                                email: email,
+                                title: document['title'].toString(),
+                                points: document['points'],
+                              );
+                            }else{
+                          return new CustomCardRedeemed(
+                            name: name,
+                            email: email,
+                            title: document['title'].toString(),
+                            points: document['points'],
+                          );
+                        }
                       }).toList(),
                     );
                 }
@@ -57,6 +74,35 @@ class MyRewardsScreenState extends State<RewardsScreen> {
       ),
       drawer: MyDrawer(),
     );
+  }
+
+
+  void queryValues() async{
+    QuerySnapshot querySnapshot = await Firestore.instance.collection(email).document('myRewards').collection('myRewards').getDocuments();
+    print("list Length");
+//    print(querySnapshot.documents.length);
+    int rewardCount = querySnapshot.documents.length;
+
+    if(rewardCount != 4) {
+      //add new enteries if they dont exist
+      databaseReference
+          .collection("Rewards")
+          .getDocuments()
+          .then((QuerySnapshot snapshot) {
+        snapshot.documents.forEach((f) {
+          //If rewards have not been generated make them
+          print('${f.data}}');
+          databaseReference.collection(email)
+              .document('myRewards').collection('myRewards')
+              .document(f.data['title'])
+              .setData({
+            'title': f.data['title'],
+            'points': f.data['points'],
+            'redeemed': 0
+          });
+        });
+      });
+    }
   }
 }
 
@@ -68,10 +114,12 @@ class CustomCard extends StatelessWidget {
   final title;
   final description;
   final points;
+  final databaseReference = Firestore.instance;
 
   @override
   Widget build(BuildContext context) {
     return Card(
+//      color: Colors.green,
       child: Container(
         padding: const EdgeInsets.only(top: 5.0),
         child: Column(
@@ -82,22 +130,23 @@ class CustomCard extends StatelessWidget {
           Text("Points: " + points.toString(),
             style: TextStyle(fontSize: 24, color: Colors.purple),
           ),
-            FlatButton(
-              child: Text("See More"),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SecondPage(
-                      name: name,
-                      email: email,
-                      title: title,
-                      description: description,
-                      points: points,
-                    )
-                  )
-                );
-              }),
+          FlatButton(
+            child: Text("Redeem"),
+            onPressed: (){
+              Firestore.instance
+                  .collection(email).document('myRewards').collection("myRewards").document(title)
+                  .updateData({
+                "redeemed": 1
+              }).then((result){
+                print("new USer true");
+              }).catchError((onError){
+                print("onError");
+              });
+//              databaseReference.collection(email).document('myRewards').collection("myRewards").document(title).setData({
+//                'Points': points,
+//              });
+            },
+            ),
           ],
         )
       )
@@ -105,8 +154,8 @@ class CustomCard extends StatelessWidget {
   }
 }
 
-class SecondPage extends StatelessWidget {
-  SecondPage({@required this.name, this.email, this.title, this.description, this.points});
+class CustomCardRedeemed extends StatelessWidget {
+  CustomCardRedeemed({@required this.name, this.email, this.title, this.description, this.points});
   final name;
   final email;
 
@@ -114,67 +163,29 @@ class SecondPage extends StatelessWidget {
   final description;
   final points;
 
-  final databaseReference = Firestore.instance;
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Text("Points: ",
-            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),
-          ),
-          Text(points.toString() + "\n",
-            style: TextStyle(fontSize: 30),
-          ),
-      ],
-      ),
-
-      floatingActionButton: Stack(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              heroTag: "btn2",
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => RewardsScreen(name,email)),
-                );
-              },
-              child: Icon(Icons.map),),
-          ),
-        ],
-      ),
+    return Card(
+        color: Colors.green,
+        child: Container(
+            padding: const EdgeInsets.only(top: 5.0),
+            child: Column(
+              children: <Widget>[
+                Text(title,
+                  style: TextStyle(fontSize: 24),
+                ),
+                Text("Points: " + points.toString(),
+                  style: TextStyle(fontSize: 24, color: Colors.purple),
+                ),
+                FlatButton(
+                  child: Text("Redeemed"),
+//                  onPressed: (){
+//
+//                  },
+                ),
+              ],
+            )
+        )
     );
-  }
-
-  void updateScore() async{
-    try {
-      QuerySnapshot querySnapshot = await Firestore.instance.collection(email).
-      document("Cleans").collection("Cleans").getDocuments();
-      print("list Length");
-      print(querySnapshot.documents.length);
-
-      if(querySnapshot.documents.length <= 0){
-        //Set new value for points
-        databaseReference.collection(email).document('points').setData({
-          'points': 0,
-        });
-      }else {
-        print("points exists");
-        databaseReference.collection(email).document('points').setData({
-          'points': (querySnapshot.documents.length * 10),
-        });
-      }
-    }catch(e){
-      print("Error");
-    }
   }
 }

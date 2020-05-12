@@ -54,21 +54,26 @@ Future<String> signInWithGoogle() async {
 }
 void createRecord() async {
   try {
-    QuerySnapshot querySnapshot = await Firestore.instance.collection(email).
-    document("Cleans").collection("Cleans").getDocuments();
+    QuerySnapshot querySnapshot = await Firestore.instance.collection("Rewards").
+//    document("myRewards").collection("Cleans").getDocuments();
+      getDocuments();
     print("list Length");
     print(querySnapshot.documents.length);
-    if(querySnapshot.documents.length <= 0){
-      //Set new value for points
-      databaseReference.collection(email).document('Points').setData({
+
+      databaseReference.collection(email).document('myRewards').setData({
         'Points': 0,
       });
-    }else {
-      print("Points exists");
-      databaseReference.collection(email).document('Points').setData({
-        'Points': (querySnapshot.documents.length * 10),
-      });
-    }
+//    if(querySnapshot.documents.length <= 0){
+      //Set new value for points
+//      databaseReference.collection(email).document('Points').setData({
+//        'Points': 0,
+//      });
+//    }else {
+//      print("Points exists");
+//      databaseReference.collection(email).document('Points').setData({
+//        'Points': (querySnapshot.documents.length * 10),
+//      });
+//    }
   } catch (e) {
     print("Error");
   }

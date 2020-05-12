@@ -50,7 +50,7 @@ class _MyDrawerState extends State<MyDrawer> {
     //Upload the picture to firestore and genereate url
     if (_image1 == null) {
       downurl = "";
-    } else {
+    }else{
       print("Uploading profile pic");
       String fileName1 = basename(_image1.path);
       StorageReference firebaseStorageRef1 = FirebaseStorage.instance.ref()
@@ -75,34 +75,50 @@ class _MyDrawerState extends State<MyDrawer> {
     }
   }
 
-  // Totals the points from each of the users individual cleans
-//  void queryValues() {
-//    Firestore.instance
-//        .collection(email)
-//        .document('Cleans').collection('Cleans')
-//        .snapshots()
-//        .listen((snapshot) {
-//      double tempTotal = snapshot.documents.fold(
-//          0, (tot, doc) => tot + doc.data['Points']);
-//      setState(() {
-//        total = tempTotal;
-//      });
-//      debugPrint("total.toString()");
-//
-//      debugPrint(total.toString());
-//    });
-//  }
-
   void queryValues() {
+    double tempTotal = 0;
+    double tempTotal1 = 0;
+
+    CollectionReference _documentRef=Firestore.instance.collection(email).document('myRewards').collection('myRewards');
+    _documentRef.getDocuments().then((ds){
+      if(ds!=null){
+        ds.documents.forEach((value){
+          if(value.data['redeemed'] == 1){
+            print('Please');
+            tempTotal1 += value.data['points'];
+          }
+        });
+      }
+//      setState(() {total = tempTotal - tempTotal1;});
+    });
+
     Firestore.instance
         .collection(email)
         .document('Cleans').collection('Cleans')
         .snapshots()
         .listen((snapshot) {
-      double tempTotal = snapshot.documents.fold(0, (tot, doc) => tot + doc.data['Points']);
-      setState(() {total = tempTotal;});
-      debugPrint(total.toString());
+      tempTotal = snapshot.documents.fold(0, (tot, doc) => tot + doc.data['Points']);
+      print(tempTotal1);
+      setState(() {total = tempTotal- tempTotal1;});
     });
+
+
+//    Firestore.instance
+//        .collection(email)
+//        .document('myRewards').collection('myRewards')
+//        .snapshots()
+//        .listen((snapshot) {
+//          print(snapshot.documents.length);
+//          for (var i = 0; i < snapshot.documents.length; i++) {
+//            children.add(new ListTile());
+//          }
+//          for(snapshot.documents[])
+//          if(snapshot.documents['redeemed'] == 1){}
+//      tempTotal = snapshot.documents.fold(0, (tot, doc) => tot + doc.data['points']);
+//      setState(() {total = tempTotal;});
+//    });
+
+    debugPrint(total.toString());
   }
 
   void initState() {
@@ -124,7 +140,9 @@ class _MyDrawerState extends State<MyDrawer> {
           UserAccountsDrawerHeader(
           accountName:
             Text(
-              "Points: " + total.toStringAsFixed(5),
+              "Points: " + total.toStringAsFixed(3),
+//              "Points: " + total.toString(),
+
               style: TextStyle(
                 color: Colors.yellow,
                 fontSize: 18,
