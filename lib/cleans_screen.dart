@@ -136,7 +136,8 @@ class CustomCard extends StatelessWidget {
                                   density: density,
                                   Points: Points,
                               )));
-                    }),
+                    }
+                    ),
               ],
             )));
   }

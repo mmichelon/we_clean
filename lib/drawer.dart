@@ -31,7 +31,7 @@ class _MyDrawerState extends State<MyDrawer> {
 
   File profilePic;
   var downurl;
-  double total;
+  double userTotal;
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery,
@@ -84,12 +84,10 @@ class _MyDrawerState extends State<MyDrawer> {
       if(ds!=null){
         ds.documents.forEach((value){
           if(value.data['redeemed'] == 1){
-            print('Please');
             tempTotal1 += value.data['points'];
           }
         });
       }
-//      setState(() {total = tempTotal - tempTotal1;});
     });
 
     Firestore.instance
@@ -99,26 +97,15 @@ class _MyDrawerState extends State<MyDrawer> {
         .listen((snapshot) {
       tempTotal = snapshot.documents.fold(0, (tot, doc) => tot + doc.data['Points']);
       print(tempTotal1);
-      setState(() {total = tempTotal- tempTotal1;});
+      setState(() {userTotal = tempTotal- tempTotal1;});
+      //Set variable to check if enough points to redeem score
+      Firestore.instance
+          .collection(email).document('Points')
+          .setData({
+        "userPoints": userTotal,
+      });
     });
-
-
-//    Firestore.instance
-//        .collection(email)
-//        .document('myRewards').collection('myRewards')
-//        .snapshots()
-//        .listen((snapshot) {
-//          print(snapshot.documents.length);
-//          for (var i = 0; i < snapshot.documents.length; i++) {
-//            children.add(new ListTile());
-//          }
-//          for(snapshot.documents[])
-//          if(snapshot.documents['redeemed'] == 1){}
-//      tempTotal = snapshot.documents.fold(0, (tot, doc) => tot + doc.data['points']);
-//      setState(() {total = tempTotal;});
-//    });
-
-    debugPrint(total.toString());
+    debugPrint(userTotal.toString());
   }
 
   void initState() {
@@ -140,9 +127,7 @@ class _MyDrawerState extends State<MyDrawer> {
           UserAccountsDrawerHeader(
           accountName:
             Text(
-              "Points: " + total.toStringAsFixed(3),
-//              "Points: " + total.toString(),
-
+              "Points: " + userTotal.toStringAsFixed(3),
               style: TextStyle(
                 color: Colors.yellow,
                 fontSize: 18,
@@ -274,7 +259,7 @@ class _MyDrawerState extends State<MyDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => RewardsScreen(name, email)),
+                    builder: (context) => RewardsScreen(name, email, userTotal)),
               );
             },
           ),
