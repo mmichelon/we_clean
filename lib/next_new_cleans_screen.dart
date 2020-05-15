@@ -259,7 +259,7 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
                   .difference(DateTime.fromMillisecondsSinceEpoch(val.documents[i].data["StartTime"].seconds*1000)).inSeconds.toDouble();
               // 1 point every 5 minutes
               print(totalTimeSeconds);
-              basePoints = totalTimeSeconds / 300;
+              basePoints = totalTimeSeconds / 150;
               break;
             }
           }
@@ -330,6 +330,28 @@ class MyNextNewCleanScreenState extends State<NextNewCleanScreen> {
       body: CustomScrollView(
         primary: false,
         slivers: <Widget>[
+
+          SliverFixedExtentList(
+            itemExtent: 70,
+            delegate: SliverChildListDelegate([
+              Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Text("Description:",
+                    style: TextStyle(color: Colors.blue, fontSize: 20),
+                    textAlign: TextAlign.center,
+                  )
+              ),
+              Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(_list[1],
+                    textAlign: TextAlign.center,
+                  )
+              ),
+
+            ],
+            ),
+          ),
+
           SliverPadding(
             padding: const EdgeInsets.all(15),
             sliver: SliverGrid.count(

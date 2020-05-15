@@ -6,7 +6,6 @@ import 'package:we_clean/map_clean_screen.dart';
 class CleansScreen extends StatefulWidget {
   final name;
   final email;
-//  final items = List<String>.generate(50, (i) => "Item $i");
 
   CleansScreen(this.name, this.email);
   @override
@@ -17,7 +16,6 @@ class MyCleanScreenState extends State<CleansScreen> {
   final name;
   final email;
 
-//  final List<String> items;
   final databaseReference = Firestore.instance;
 
   MyCleanScreenState(this.name, this.email);
@@ -189,17 +187,21 @@ class SecondPage extends StatelessWidget {
               children: <Widget>[
               Container(
                 child: Column(children: <Widget>[
-                  Text("Description: "),
-                  Text(description.toString() + "\n"),
-                  Text("Terrain: \n" + terrain.toString() + "\n"),
-                  Text("Density: \n" + density.toString() + "\n"),
+                  Text("Description:",style: TextStyle(color: Colors.blue),),
+                  Text(description.toString()+ "\n",
+                    textAlign: TextAlign.center,),
+                  Text("Terrain:",style: TextStyle(color: Colors.blue),),
+                  Text(terrain.toString()),
+                  Text("Density:",style: TextStyle(color: Colors.blue),),
+                  Text(density.toString()),
+
                 ],
               ),
               ),
               Container(
                 padding: const EdgeInsets.all(8),
                 child: Column(children: <Widget>[
-                Text("Time Spent:"),
+                Text("Time Spent:",style: TextStyle(color: Colors.blue),),
                 Text(StartTime == null || EndTime == null
                         ? Text("No Time")
                         : DateTime.fromMillisecondsSinceEpoch(EndTime.seconds*1000)
@@ -222,8 +224,8 @@ class SecondPage extends StatelessWidget {
                     .inSeconds % 60)
                     .toString() +
                     " Seconds"),
-
-                Text("\n Points \n" + Points.toStringAsFixed(5) + "\n"),
+                Text("\n Points",style: TextStyle(color: Colors.blue),),
+                Text(Points.toStringAsFixed(5) + "\n"),
 
                 ],
                 )
@@ -232,39 +234,68 @@ class SecondPage extends StatelessWidget {
               ],
             ),
           ),
+          SliverFixedExtentList(
+            itemExtent: 50,
+            delegate: SliverChildListDelegate([
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: Text("Images Before:",
+                  style: TextStyle(color: Colors.blue, fontSize: 20),
+                  textAlign: TextAlign.center,
+                )
+              ),
 
-          SliverPadding(
-          padding: const EdgeInsets.all(20),
-          sliver: SliverGrid.count(
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          crossAxisCount: 1,
-          children: <Widget>[
-                Container(
+            ],
+            ),
+          ),
+          SliverFixedExtentList(
+            itemExtent: 450,
+            delegate: SliverChildListDelegate([
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: downurl1 == ""
+                  ? Text("No image")
+                  : Image.network(downurl1, fit:BoxFit.fill),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: downurl2 == ""
+                    ? Text("No image")
+                    : Image.network(downurl2, fit:BoxFit.fill),
+              ),
+            ],
+            ),
+          ),
+          SliverFixedExtentList(
+            itemExtent: 50,
+            delegate: SliverChildListDelegate([
+              Container(
                   padding: const EdgeInsets.all(8),
-                  child: downurl1 == ""
-                      ? Text("No image")
-                      : Image.network(downurl1, fit:BoxFit.fill),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  child: downurl2 == ""
-                      ? Text("No image")
-                      : Image.network(downurl2, fit:BoxFit.fill),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  child: downurl3 == ""
-                      ? Text("No image")
-                      : Image.network(downurl3, fit:BoxFit.fill),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  child: downurl4 == ""
-                      ? Text("No image")
-                      : Image.network(downurl4, fit:BoxFit.fill),
-                ),
-              ],
+                  child: Text("Images After:",
+                    style: TextStyle(color: Colors.blue, fontSize: 20),
+                    textAlign: TextAlign.center,
+                  )
+              ),
+
+            ],
+            ),
+          ),
+          SliverFixedExtentList(
+            itemExtent: 450,
+            delegate: SliverChildListDelegate([
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: downurl3 == ""
+                    ? Text("No image")
+                    : Image.network(downurl3, fit:BoxFit.fill),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: downurl4 == ""
+                    ? Text("No image")
+                    : Image.network(downurl4, fit:BoxFit.fill),
+              ),
+            ],
             ),
           ),
         ],
@@ -283,7 +314,6 @@ class SecondPage extends StatelessWidget {
               heroTag: "btn1",
               onPressed: () {
                 deleteClean(title);
-//                updateScore();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -321,29 +351,6 @@ class SecondPage extends StatelessWidget {
           .delete();
     } catch (e) {
       print(e.toString());
-    }
-  }
-
-  void updateScore() async{
-    try {
-      QuerySnapshot querySnapshot = await Firestore.instance.collection(email).
-      document("Cleans").collection("Cleans").getDocuments();
-      print("list Length");
-      print(querySnapshot.documents.length);
-
-      if(querySnapshot.documents.length <= 0){
-        //Set new value for points
-        databaseReference.collection(email).document('Points').setData({
-        'Points': 0,
-        });
-      }else {
-        print("Points exists");
-        databaseReference.collection(email).document('Points').setData({
-        'Points': (querySnapshot.documents.length * 10),
-        });
-      }
-    }catch(e){
-      print("Error");
     }
   }
 }

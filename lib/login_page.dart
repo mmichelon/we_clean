@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home.dart';
 import 'package:we_clean/sign_in.dart';
-import 'package:we_clean/map_screen.dart';
 import 'package:we_clean/cleans_screen.dart';
+import 'package:we_clean/about.dart';
+
+
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -24,12 +28,21 @@ class _LoginPageState extends State<LoginPage> {
               Image.asset('assets/we_clean.png',),
               SizedBox(height: 50),
               _signInGoogleButton(),
-              SizedBox(height: 20),
-              _signInAnonButton(),
+//              SizedBox(height: 20),
+//              _signInAnonButton(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void showLongToast(String name) {
+    Fluttertoast.showToast(
+      msg: "Welcome " + name,
+      toastLength: Toast.LENGTH_LONG,
+      backgroundColor: Colors.blue,
+      textColor: Colors.white,
     );
   }
 
@@ -38,10 +51,13 @@ class _LoginPageState extends State<LoginPage> {
       splashColor: Colors.grey,
       onPressed: () {
         signInWithGoogle().whenComplete(() {
+          showLongToast(name);
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => CleansScreen(name, email)),
+//                builder: (context) => CleansScreen(name, email)),
+                builder: (context) => AboutScreen(name, email)),
+
           );
 //          Navigator.of(context).push(
 //            MaterialPageRoute(

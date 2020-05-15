@@ -6,10 +6,13 @@ import 'package:we_clean/new_cleans_screen.dart';
 import 'package:we_clean/sign_in.dart';
 import 'package:we_clean/cleans_screen.dart';
 import 'package:we_clean/map_screen.dart';
+import 'package:we_clean/map_screen_dirty.dart';
+
 import 'package:we_clean/login_page.dart';
 import 'package:we_clean/rewards.dart';
 import 'package:we_clean/dirty_screen.dart';
 import 'package:we_clean/new_dirty_screen.dart';
+import 'package:we_clean/about.dart';
 
 //For images
 import 'dart:io';
@@ -246,7 +249,18 @@ class _MyDrawerState extends State<MyDrawer> {
                   );
                 },
               ),
-
+              ListTile(
+                trailing: Icon(Icons.map),
+                title: Text('      MapView'),
+                onTap: (){
+                  print('Go to map page');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DirtyMapScreen(name, email, 45.521563, -122.677433 )),
+                  );
+                },
+              ),
             ],
           ),
           ListTile(
@@ -255,11 +269,25 @@ class _MyDrawerState extends State<MyDrawer> {
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 20),
             ),
             onTap: (){
-              print('Go to map page');
+              print('Go to rewards page');
               Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => RewardsScreen(name, email, userTotal)),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.info),
+            title: Text('About',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 20),
+            ),
+            onTap: (){
+              print('Go to About page');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AboutScreen(name, email)),
               );
             },
           ),

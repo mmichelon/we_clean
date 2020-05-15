@@ -85,13 +85,19 @@ class MyRewardsScreenState extends State<RewardsScreen> {
 
   void queryValues() async{
     QuerySnapshot querySnapshot = await Firestore.instance.collection(email).document('myRewards').collection('myRewards').getDocuments();
+    QuerySnapshot querySnapshotReward = await Firestore.instance.collection("Rewards").getDocuments();
+
     Random random = new Random();
 
     print("list Length");
 //    print(querySnapshot.documents.length);
-    int rewardCount = querySnapshot.documents.length;
+    int myrewardCount = querySnapshot.documents.length;
+    int rewardCount = querySnapshotReward.documents.length;
 
-    if(rewardCount != 4) {
+    print("rewardCount: " + rewardCount.toString());
+    print("rewardCountReward: " + querySnapshotReward.documents.length.toString());
+
+    if(myrewardCount != rewardCount) {
       //add new enteries if they dont exist
       databaseReference
           .collection("Rewards")

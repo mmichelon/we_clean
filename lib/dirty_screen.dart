@@ -53,6 +53,7 @@ class MyDirtyScreenState extends State<DirtyScreen> {
                           title: document['title'].toString(),
                           description: document['description'].toString(),
                           downurl: document['downurl'].toString(),
+                          poster: document['poster'].toString(),
                         );
                       }).toList(),
                     );
@@ -66,7 +67,7 @@ class MyDirtyScreenState extends State<DirtyScreen> {
 }
 
 class CustomCard extends StatelessWidget {
-  CustomCard({@required this.name, this.email, this.StartLat, this.StartLon, this.title, this.description, this.downurl});
+  CustomCard({@required this.name, this.email, this.StartLat, this.StartLon, this.title, this.description, this.downurl, this.poster});
   final name;
   final email;
   final StartLat;
@@ -74,6 +75,7 @@ class CustomCard extends StatelessWidget {
   final title;
   final description;
   final downurl;
+  final poster;
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +109,7 @@ class CustomCard extends StatelessWidget {
                                 StartLon: StartLon,
                                 description: description,
                                 downurl: downurl,
+                                poster: poster,
                               )
                           )
                       );
@@ -120,13 +123,14 @@ class CustomCard extends StatelessWidget {
 }
 
 class SecondPage extends StatelessWidget {
-  SecondPage({@required this.name, this.email, this.title, this.StartLat, this.StartLon, this.description, this.downurl});
+  SecondPage({@required this.name, this.email, this.title, this.StartLat, this.StartLon, this.description, this.downurl, this.poster});
   final name;
   final email;
   final StartLat;
   final StartLon;
   final title;
   final description;
+  final poster;
 
   final downurl;
 
@@ -142,12 +146,13 @@ class SecondPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text(name + " requests your help!",
-            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
+          Text(poster + " requests your help!",
+            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),
           ),
           Text(""), //Spacer
           Text(description.toString(),
-            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),
+            style: TextStyle(fontSize: 20),
+            textAlign: TextAlign.center,
           ),
           Container(
             padding: const EdgeInsets.only(left: 15),
@@ -155,13 +160,6 @@ class SecondPage extends StatelessWidget {
                 ? Text("No image")
                 : Image.network(downurl, fit:BoxFit.fill),
           ),
-
-//          Image.network(
-//            downurl,
-//            width: 400,
-//            height: 400,
-//            fit: BoxFit.cover,
-//          ),
         ],
       ),
       floatingActionButton: Stack(
@@ -175,8 +173,6 @@ class SecondPage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => MapDirtyScreen(name, email, StartLat, StartLon, title, description)),
-
-//                      builder: (context) => map(name,email)),
                 );
               },
               child: Icon(Icons.map),),
