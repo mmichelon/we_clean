@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:we_clean/drawer.dart';
 import 'package:infinite_listview/infinite_listview.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatefulWidget {
   final name;
@@ -64,8 +65,18 @@ class MyAboutScreenState extends State<AboutScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,
                               color: Colors.blue),
                         ),
-                        Text("We_clean users will operate under federal and state laws.\n All users will adhere to Penal codes reguarding illegal dumping and trespassing.\n"+
-                          "Users will adhere to all private property rights. "+
+
+                        Text("We_clean users will operate under federal and state laws.\n All users will adhere to Penal codes reguarding illegal dumping and trespassing.",
+                          style: TextStyle(fontSize: 20),
+                          textAlign: TextAlign.center,),
+                        new InkWell(
+                            child: new Text('For information on California Penal Codes, Click here.',
+                              style: TextStyle(fontSize: 15,
+                                  color: Colors.blue),
+                                  textAlign: TextAlign.center,),
+                            onTap: () => launch('https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PEN&sectionNum=374.3')
+                        ),
+                          Text("Users will adhere to all private property rights. "+
                           "Before entering private property, written permission must be abtained before entering the property.",
                           style: TextStyle(fontSize: 20),
                           textAlign: TextAlign.center,

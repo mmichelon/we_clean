@@ -151,7 +151,7 @@ class SecondPage extends StatelessWidget {
           ),
           Text(""), //Spacer
           Text(description.toString(),
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 15),
             textAlign: TextAlign.center,
           ),
           Container(
