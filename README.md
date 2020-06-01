@@ -25,6 +25,27 @@ Display information from database on a digital topographic map(Google Maps).
 - Firebase and Firestore
 
 ## Screenshots from the application
+
+## Home Screen
 <img src="/Screenshots/Screenshot_1589685437.png" width="108" height="192">
+
+## Main Drawer - Available across all screens
+<img src="/Screenshots/Screenshot_1589686290.png" width="216" height="384">
+
+## New clean
+<img src="/Screenshots/Screenshot_1589686290.png" width="216" height="384">
+<img src="/Screenshots/Screenshot_1589686315.png" width="216" height="384">
+<img src="/Screenshots/Screenshot_1589686324.png" width="216" height="384">
+<img src="/Screenshots/Screenshot_1589686330.png" width="216" height="384">
+<img src="/Screenshots/Screenshot_1589686347.png" width="216" height="384">
+
+## Maps of cleans
+<img src="/Screenshots/Screenshot_1589686389.png" width="216" height="384">
+<img src="/Screenshots/Screenshot_1589686408.png" width="216" height="384">
+
+
+## Dirty Screen and all Dirty locations
+
+## Rewards Screen
 
 ![](/Screenshots/Screenshot_1589685437.png)
