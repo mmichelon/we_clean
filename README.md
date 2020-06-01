@@ -25,4 +25,6 @@ Display information from database on a digital topographic map(Google Maps).
 - Firebase and Firestore
 
 ## Screenshots from the application
+<img src="/Screenshots/Screenshot_1589685437.png" width="108" height="192">
+
 ![](/Screenshots/Screenshot_1589685437.png)
