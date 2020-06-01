@@ -65,8 +65,7 @@ void createRecord() async {
     if (snapShot.exists){
       //it exists
       // Do nothing
-    }
-    else{
+    }else{
       //not exists
       databaseReference.collection(email).document('Profile_Pic').setData({
         'Profile_Pic': "https://firebasestorage.googleapis.com/v0/b/we-clean-4ef33.appspot.com/o/we_clean.png?alt=media&token=c5bd9290-2e00-4a35-ae85-718a4bacd547",
